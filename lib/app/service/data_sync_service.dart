@@ -65,6 +65,7 @@ class DataSyncService extends GetxService {
         final parsed = await compute(parseJson, response.data.toString());
         await box.putAll({
           Config.calendarDiscount: double.tryParse(parsed.calendarDiscount ?? '0') ?? 0.0,
+          if (parsed.company != null) Config.company: parsed.company,
           if (parsed.categoryTreeProduct?.isNotEmpty ?? false) Config.categoryTreeProduct: parsed.categoryTreeProduct,
           if (parsed.productRemarks?.isNotEmpty ?? false) Config.productRemarks: parsed.productRemarks,
           if (parsed.productSetMeal?.isNotEmpty ?? false) Config.productSetMeal: parsed.productSetMeal,
