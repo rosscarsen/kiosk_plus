@@ -1,0 +1,55 @@
+name: kiosk_plus
+description: "A new Flutter project."
+publish_to: 'none' 
+version: 1.0.1+1
+
+environment:
+  sdk: ^3.10.0
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  get: ^5.0.0-release-candidate-9.3.2
+  rounded_loading_button_plus: ^3.0.1
+  dio: ^5.9.0
+  loading_animation_widget: ^1.3.0
+  easy_image_viewer: ^1.5.1
+  responsive_grid_list: ^1.4.1
+  skeletonizer: ^2.1.0+1
+  intl: ^0.20.2
+  flutter_smart_dialog: ^4.9.8+9
+  json_annotation: ^4.9.0
+  cached_network_image: ^3.4.1
+  expandable: ^5.0.1
+  flutter_localizations:
+    sdk: flutter
+  logger: ^2.6.2
+  scrollable_list_tab_scroller: ^3.1.1
+  font_awesome_flutter: ^10.12.0
+  form_builder_validators: ^11.2.0
+  flutter_form_builder: ^10.2.0
+  flutter_gradient_animation_text: ^1.0.2
+  flutter_pos_printer_platform_image_3_sdt: ^1.2.25
+  esc_pos_utils_plus: ^2.0.4
+  app_settings: ^6.1.1
+  characters: ^1.4.0
+  flutter_native_splash: ^2.4.7
+  flutter_launcher_icons: ^0.14.4
+  local_session_timeout: ^3.2.0
+  carousel_slider: ^5.1.1
+  hive_ce: ^2.15.1
+  hive_ce_flutter: ^2.3.3
+  webcrypto: ^0.6.0
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  json_serializable: ^6.11.2
+  build_runner: ^2.10.4
+  hive_ce_generator: ^1.10.0
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/
+get_cli:
+  sub_folder: false  

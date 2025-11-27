@@ -1,0 +1,113 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:get/get.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:rounded_loading_button_plus/rounded_loading_button.dart';
+
+import '../../config.dart';
+import '../../model/login/login_data_model.dart';
+import '../../model/login/login_response_model.dart';
+import '../../routes/app_pages.dart';
+import '../../service/dio_api_client.dart';
+import '../../service/dio_api_result.dart';
+import '../../translations/locale_keys.dart';
+import '../../utils/custom_alert.dart';
+import '../../utils/custom_dialog.dart';
+
+class LoginController extends GetxController with GetSingleTickerProviderStateMixin {
+  final GlobalKey<FormBuilderState> _formKey = GlobalKey<FormBuilderState>();
+  GlobalKey<FormBuilderState> get formKey => _formKey;
+  final RoundedLoadingButtonController signInController = RoundedLoadingButtonController();
+  late AnimationController animationController;
+  final ApiClient apiClient = ApiClient();
+
+  @override
+  void onInit() {
+    super.onInit();
+    animationController = AnimationController(vsync: this, duration: const Duration(seconds: 1))..repeat(reverse: true);
+  }
+
+  @override
+  void onReady() {
+    getLoginInfo();
+    super.onReady();
+  }
+
+  @override
+  void onClose() {
+    animationController.dispose();
+    super.onClose();
+  }
+
+  //获取本地存储的用户信息
+  Future<void> getLoginInfo() async {
+    final box = IsolatedHive.box(Config.kioskHiveBox);
+    final bool remember = await box.get(Config.remember) as bool? ?? false;
+    final loginInfo = await box.get(Config.loginData) as LoginDataModel?;
+    if (remember && loginInfo != null) {
+      _formKey.currentState?.fields['company']?.didChange(loginInfo.company);
+      _formKey.currentState?.fields['user']?.didChange(loginInfo.user);
+      _formKey.currentState?.fields['password']?.didChange(loginInfo.pwd);
+    }
+  }
+
+  //远程登录
+  Future<void> signIn() async {
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (_formKey.currentState?.saveAndValidate() ?? false) {
+      final Map<String, dynamic> loginFormData = _formKey.currentState?.value ?? {};
+      try {
+        final DioApiResult dioApiResult = await apiClient.post(Config.login, data: loginFormData);
+        if (!dioApiResult.success) {
+          CustomDialog.errorMessages(dioApiResult.error ?? LocaleKeys.unknownError.tr);
+          return;
+        }
+
+        if (dioApiResult.data == null) {
+          CustomDialog.errorMessages(dioApiResult.error ?? LocaleKeys.unknownError.tr);
+          return;
+        }
+
+        final loginModel = loginResponseModelFromJson(dioApiResult.data!);
+        switch (loginModel.status) {
+          case 200:
+            final LoginDataModel? loginResult = loginModel.apiResult;
+            if (loginResult == null) {
+              CustomDialog.errorMessages(dioApiResult.error ?? LocaleKeys.unknownError.tr);
+              return;
+            }
+            final box = IsolatedHive.box(Config.kioskHiveBox);
+            await box.put(Config.loginData, loginResult);
+
+            if (loginFormData['remember'] == true) {
+              await box.put(Config.remember, true);
+            } else {
+              await box.put(Config.remember, false);
+            }
+            signInController.success();
+            await Future.delayed(const Duration(seconds: 1), () => Get.offAndToNamed(Routes.HOME));
+            break;
+          case 201:
+            CustomAlert.iosAlert(message: LocaleKeys.paramError.trArgs([LocaleKeys.companyID.tr]));
+            break;
+          case 202:
+            CustomAlert.iosAlert(message: LocaleKeys.userOrPasswordError.tr);
+            break;
+          case 203:
+            CustomAlert.iosAlert(message: LocaleKeys.theWebsiteDoesNotExist.tr);
+            break;
+          default:
+            CustomAlert.iosAlert(message: LocaleKeys.unknownError.tr);
+            break;
+        }
+      } finally {
+        await Future.delayed(const Duration(seconds: 1));
+        signInController.reset();
+      }
+    } else {
+      signInController.error();
+      await Future.delayed(const Duration(seconds: 1));
+      signInController.reset();
+    }
+  }
+}
