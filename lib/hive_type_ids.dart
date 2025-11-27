@@ -10,4 +10,5 @@ class HiveTypeIds {
   static const int productSetMealModel = 6;
   static const int productSetMealLimitModel = 7;
   static const int productRemarksModel = 8;
+  static const int company = 9;
 }
