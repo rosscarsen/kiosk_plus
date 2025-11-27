@@ -27,7 +27,7 @@ class DataResultModel {
   @HiveField(5)
   final List<ProductSetMealLimit>? productSetMealLimit;
   @HiveField(6)
-  final Company? company;
+  final CompanyInfo? companyInfo;
 
   DataResultModel({
     this.calendarDiscount,
@@ -35,7 +35,7 @@ class DataResultModel {
     this.productRemarks,
     this.productSetMeal,
     this.productSetMealLimit,
-    this.company,
+    this.companyInfo,
   });
 
   factory DataResultModel.fromJson(Map<String, dynamic> json) => DataResultModel(
@@ -52,12 +52,12 @@ class DataResultModel {
     productSetMealLimit: json["productSetMealLimit"] == null
         ? []
         : List<ProductSetMealLimit>.from(json["productSetMealLimit"]!.map((x) => ProductSetMealLimit.fromJson(x))),
-    company: json["company"] == null ? null : Company.fromJson(json["company"]),
+    companyInfo: json["companyInfo"] == null ? null : CompanyInfo.fromJson(json["companyInfo"]),
   );
 
   Map<String, dynamic> toJson() => {
     "calendarDiscount": calendarDiscount,
-    "company": company?.toJson(),
+    "companyInfo": companyInfo?.toJson(),
     "categoryTreeProduct": categoryTreeProduct == null
         ? []
         : List<dynamic>.from(categoryTreeProduct!.map((x) => x.toJson())),
@@ -70,16 +70,16 @@ class DataResultModel {
 }
 
 @HiveType(typeId: HiveTypeIds.company)
-class Company {
+class CompanyInfo {
   @HiveField(1)
   final String? mNameEnglish;
   @HiveField(2)
   final String? mNameChinese;
 
-  Company({this.mNameEnglish, this.mNameChinese});
+  CompanyInfo({this.mNameEnglish, this.mNameChinese});
 
-  factory Company.fromJson(Map<String, dynamic> json) =>
-      Company(mNameEnglish: json["mName_English"], mNameChinese: json["mName_Chinese"]);
+  factory CompanyInfo.fromJson(Map<String, dynamic> json) =>
+      CompanyInfo(mNameEnglish: json["mName_English"], mNameChinese: json["mName_Chinese"]);
 
   Map<String, dynamic> toJson() => {"mName_English": mNameEnglish, "mName_Chinese": mNameChinese};
 }

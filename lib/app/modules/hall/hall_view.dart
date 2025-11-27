@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../config.dart';
+import '../../model/api_data_model/data_result_model.dart';
+import '../../routes/app_pages.dart';
 import 'hall_controller.dart';
 
 class HallView extends GetView<HallController> {
@@ -7,13 +10,25 @@ class HallView extends GetView<HallController> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: false,
+      canPop: true,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text("大厅"),
-          automaticallyImplyLeading: false,
+          title: Obx(() => Text(controller.companyName.value)),
+          //automaticallyImplyLeading: false,
           centerTitle: true,
-          actions: [Icon(Icons.shopping_cart), Text('\$10.0')],
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 12.0),
+              child: Row(
+                spacing: 20,
+                children: [
+                  // Badge(label: Text('100'), child: Icon(Icons.shopping_cart)),
+                  Badge.count(count: 5, child: const Icon(Icons.shopping_cart)),
+                  Text('\$100.00', style: const TextStyle(fontSize: 20.0)),
+                ],
+              ),
+            ),
+          ],
         ),
         body: _buildMainView(),
       ),
@@ -31,9 +46,12 @@ class HallView extends GetView<HallController> {
           ElevatedButton(
             child: const Text('获取本地数据'),
             onPressed: () async {
+              //Get.toNamed(Routes.LOGIN);
               /*  await controller.box.delete(Config.categoryTreeProduct);
               logger.i("==>删除本地数据: ${await controller.box.get(Config.categoryTreeProduct)}"); */
-              controller.getLocaleData();
+              /* controller.getLocaleData(); */
+              //Get.toNamed(Routes.LOGIN);
+              print((await controller.box.get(Config.companyInfo) as CompanyInfo?)?.toJson());
             },
           ),
         ],

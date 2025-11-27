@@ -12,7 +12,7 @@ class Config {
   static String productRemarks = 'productRemarks'; //产品备注
   static String productSetMeal = 'productSetMeal'; //产品套餐
   static String productSetMealLimit = 'productSetMealLimit'; //套餐限制
-  static String company = 'company'; //公司信息
+  static String companyInfo = 'companyInfo'; //公司信息
 
   /// API基础地址
   //static String baseurl = "https://api.friendsclub.com/kioskPlus";

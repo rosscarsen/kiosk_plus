@@ -22,7 +22,7 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
       productRemarks: (fields[3] as List?)?.cast<ProductRemark>(),
       productSetMeal: (fields[4] as List?)?.cast<ProductSetMeal>(),
       productSetMealLimit: (fields[5] as List?)?.cast<ProductSetMealLimit>(),
-      company: fields[6] as Company?,
+      companyInfo: fields[6] as CompanyInfo?,
     );
   }
 
@@ -41,7 +41,7 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
       ..writeByte(5)
       ..write(obj.productSetMealLimit)
       ..writeByte(6)
-      ..write(obj.company);
+      ..write(obj.companyInfo);
   }
 
   @override
@@ -55,24 +55,24 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
           typeId == other.typeId;
 }
 
-class CompanyAdapter extends TypeAdapter<Company> {
+class CompanyInfoAdapter extends TypeAdapter<CompanyInfo> {
   @override
   final typeId = 9;
 
   @override
-  Company read(BinaryReader reader) {
+  CompanyInfo read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Company(
+    return CompanyInfo(
       mNameEnglish: fields[1] as String?,
       mNameChinese: fields[2] as String?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Company obj) {
+  void write(BinaryWriter writer, CompanyInfo obj) {
     writer
       ..writeByte(2)
       ..writeByte(1)
@@ -87,7 +87,7 @@ class CompanyAdapter extends TypeAdapter<Company> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is CompanyAdapter &&
+      other is CompanyInfoAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

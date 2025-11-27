@@ -11,6 +11,7 @@ class HallController extends GetxController {
   final ApiClient apiClient = ApiClient();
   RxBool isLoading = false.obs;
   List<CategoryTreeProduct> categoryTreeProductList = [];
+  RxString companyName = "".obs;
 
   @override
   void onInit() {
@@ -31,11 +32,16 @@ class HallController extends GetxController {
 
   Future<void> getLocaleData() async {
     isLoading.value = true;
-    final categoryTreeProduct = await box.get(Config.categoryTreeProduct);
+    final companyInfo = await box.get(Config.companyInfo) as CompanyInfo?;
+
+    companyName.value = Get.locale.toString() == 'en_US'
+        ? companyInfo?.mNameEnglish ?? ''
+        : companyInfo?.mNameChinese ?? '';
+
+    var categoryTreeProduct = await box.get(Config.categoryTreeProduct);
     if (categoryTreeProduct == null) {
       await Get.find<DataSyncService>().getData();
-    } else {
-      await getLocaleData();
+      categoryTreeProduct = await box.get(Config.categoryTreeProduct);
     }
     if (categoryTreeProduct is List) {
       categoryTreeProductList = categoryTreeProduct.cast<CategoryTreeProduct>();

@@ -9,7 +9,7 @@ import 'package:kiosk_plus/app/model/login/login_data_model.dart';
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
     registerAdapter(CategoryTreeProductAdapter());
-    registerAdapter(CompanyAdapter());
+    registerAdapter(CompanyInfoAdapter());
     registerAdapter(DataResultModelAdapter());
     registerAdapter(DsnAdapter());
     registerAdapter(LoginDataModelAdapter());
@@ -23,7 +23,7 @@ extension HiveRegistrar on HiveInterface {
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
     registerAdapter(CategoryTreeProductAdapter());
-    registerAdapter(CompanyAdapter());
+    registerAdapter(CompanyInfoAdapter());
     registerAdapter(DataResultModelAdapter());
     registerAdapter(DsnAdapter());
     registerAdapter(LoginDataModelAdapter());
