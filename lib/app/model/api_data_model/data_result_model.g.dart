@@ -22,13 +22,14 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
       productRemarks: (fields[3] as List?)?.cast<ProductRemark>(),
       productSetMeal: (fields[4] as List?)?.cast<ProductSetMeal>(),
       productSetMealLimit: (fields[5] as List?)?.cast<ProductSetMealLimit>(),
+      company: fields[6] as Company?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DataResultModel obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(1)
       ..write(obj.calendarDiscount)
       ..writeByte(2)
@@ -38,7 +39,9 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
       ..writeByte(4)
       ..write(obj.productSetMeal)
       ..writeByte(5)
-      ..write(obj.productSetMealLimit);
+      ..write(obj.productSetMealLimit)
+      ..writeByte(6)
+      ..write(obj.company);
   }
 
   @override
@@ -48,6 +51,43 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is DataResultModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class CompanyAdapter extends TypeAdapter<Company> {
+  @override
+  final typeId = 9;
+
+  @override
+  Company read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Company(
+      mNameEnglish: fields[1] as String?,
+      mNameChinese: fields[2] as String?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Company obj) {
+    writer
+      ..writeByte(2)
+      ..writeByte(1)
+      ..write(obj.mNameEnglish)
+      ..writeByte(2)
+      ..write(obj.mNameChinese);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CompanyAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
