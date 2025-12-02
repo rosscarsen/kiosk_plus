@@ -108,6 +108,15 @@ class HomeView extends GetView<HomeController> {
                 FilledButton(
                   onPressed: () async {
                     Get.closeDialog();
+                    final box = IsolatedHive.box(Config.kioskHiveBox);
+                    box.deleteAll([
+                      Config.calendarDiscount,
+                      Config.companyInfo,
+                      Config.categoryTreeProduct,
+                      Config.productRemarks,
+                      Config.productSetMeal,
+                      Config.productSetMealLimit,
+                    ]);
                     Get.offAllNamed(Routes.LOGIN);
                   },
                   child: Text(LocaleKeys.loginOut.tr),
