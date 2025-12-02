@@ -2,6 +2,7 @@ import 'package:extended_tabs/extended_tabs.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:kiosk_plus/app/widgets/auto_text.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../model/api_data_model/data_result_model.dart';
 import 'hall_controller.dart';
@@ -11,92 +12,189 @@ class HallView extends GetView<HallController> {
 
   @override
   Widget build(BuildContext context) {
+    final themeColor = Theme.of(context).primaryColor;
+
     return Scaffold(
+      backgroundColor: const Color(0xFFF6F7FB),
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        centerTitle: true,
         title: Obx(
           () => Text(
             controller.companyName.value,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: themeColor, letterSpacing: 0.4),
           ),
         ),
-        centerTitle: true,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 12.0),
+            child: Row(
+              spacing: 20,
+              children: [
+                // Badge(label: Text('100'), child: Icon(Icons.shopping_cart)),
+                Badge.count(count: 5, child: const Icon(Icons.shopping_cart)),
+                Text('\$100.00', style: const TextStyle(fontSize: 20.0)),
+              ],
+            ),
+          ),
+        ],
+        shadowColor: Colors.black.withAlpha(15),
       ),
       body: GetBuilder<HallController>(
         id: "hall_body",
         builder: (_) {
-          return controller.isDataReady ? _buildMain(context) : Center(child: CircularProgressIndicator());
+          if (!controller.isDataReady) {
+            return const Center(child: CircularProgressIndicator(strokeWidth: 3));
+          }
+          return _buildMain(context);
         },
       ),
     );
   }
 
-  //主视图
+  //  主视图
   Widget _buildMain(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.ltr,
-      child: Row(children: [_buildLeftNav(context), _buildRightContainer(context)]),
+    return Row(
+      children: [
+        _buildLeftNav(context),
+        Expanded(
+          child: Container(
+            margin: const EdgeInsets.only(left: 8, top: 10, bottom: 10, right: 8),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(26)),
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 20, offset: Offset(0, 8))],
+            ),
+            child: _buildRightContainer(context),
+          ),
+        ),
+      ],
     );
   }
 
-  /// 左边第一大类
+  /// 左侧一级分类
   Widget _buildLeftNav(BuildContext context) {
-    return ExtendedTabBar(
-      isScrollable: true,
-      controller: controller.firstLevelTabController,
-      scrollDirection: Axis.vertical,
-      indicator: const ColorTabIndicator(Colors.blue),
-      labelColor: Colors.black,
-      tabs: controller.categoryTreeProductList
-          .map((c) => ExtendedTab(text: c.mDescription ?? c.mCategory ?? '', scrollDirection: Axis.vertical))
-          .toList(),
-    );
-  }
+    final themeColor = Theme.of(context).primaryColor;
 
-  /// 右边内容
-  Widget _buildRightContainer(BuildContext context) {
-    return Expanded(
-      child: ExtendedTabBarView(
+    return Container(
+      clipBehavior: Clip.hardEdge,
+      width: 160,
+      margin: const EdgeInsets.symmetric(vertical: 12, horizontal: 3),
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        gradient: const LinearGradient(
+          colors: [Color(0xFFFFFFFF), Color(0xFFF2F4F8)],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+        ),
+        boxShadow: [BoxShadow(color: Colors.black.withAlpha(20), blurRadius: 22, offset: Offset(4, 0))],
+      ),
+      child: ExtendedTabBar(
         controller: controller.firstLevelTabController,
-        children: controller.categoryTreeProductList
-            .map((category) => _buildSecondLevelAndProducts(context, category))
-            .toList(),
+        mainAxisAlignment: MainAxisAlignment.start,
+        dividerColor: Colors.transparent,
+        isScrollable: true,
+        scrollDirection: Axis.vertical,
+        labelPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        labelColor: Colors.white,
+        unselectedLabelColor: const Color(0xFF666666),
+        indicator: BoxDecoration(color: themeColor, borderRadius: BorderRadius.circular(14)),
+        tabs: controller.categoryTreeProductList.map((c) {
+          return Tab(
+            height: 48,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: AutoText(
+                c.mDescription ?? c.mCategory ?? '',
+                maxLines: 1,
+                style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                textAlign: TextAlign.left,
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
 
-  /// 右边第二大类
+  /// 右侧内容
+  Widget _buildRightContainer(BuildContext context) {
+    return ExtendedTabBarView(
+      controller: controller.firstLevelTabController,
+      children: controller.categoryTreeProductList
+          .map((category) => _buildSecondLevelAndProducts(context, category))
+          .toList(),
+    );
+  }
+
+  /// 二级分类 + 商品
   Widget _buildSecondLevelAndProducts(BuildContext context, CategoryTreeProduct category) {
     final int firstIndex = controller.categoryTreeProductList.indexOf(category);
     final children = category.children ?? [];
+    final themeColor = Theme.of(context).primaryColor;
 
     if (children.isEmpty) {
-      return const Center(child: Text('无子分类'));
+      return const Center(
+        child: Text('无子分类', style: TextStyle(color: Colors.grey, fontSize: 16)),
+      );
     }
 
     final TabController secondController = controller.secondLevelControllers[firstIndex]!;
 
     return Column(
       children: [
-        /// ✅ 右上：第二大类（可滚动，不溢出）
-        ExtendedTabBar(
-          controller: secondController,
-          isScrollable: true, // ✅ 关键：防止溢出
-          scrollDirection: Axis.horizontal,
-          indicator: const ColorTabIndicator(Colors.blue),
-          labelColor: Colors.black,
-          mainAxisAlignment: MainAxisAlignment.start,
-          tabs: children
-              .map((e) => ExtendedTab(text: e.mDescription ?? e.mCategory ?? '', scrollDirection: Axis.vertical))
-              .toList(),
+        /// 二级分类
+        Container(
+          height: 64,
+          width: double.infinity,
+          margin: const EdgeInsets.fromLTRB(0, 14, 12, 10),
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [BoxShadow(color: Colors.black.withAlpha(15), blurRadius: 12, offset: const Offset(0, 4))],
+          ),
+          child: ExtendedTabBar(
+            controller: secondController,
+            isScrollable: true,
+            scrollDirection: Axis.horizontal,
+            mainAxisAlignment: MainAxisAlignment.start,
+            dividerColor: Colors.transparent,
+            indicator: BoxDecoration(color: themeColor, borderRadius: BorderRadius.circular(14)),
+
+            labelColor: Colors.white,
+            unselectedLabelColor: const Color(0xFF666666),
+            labelStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
+
+            labelPadding: const EdgeInsets.symmetric(horizontal: 18),
+
+            tabs: children.map((e) {
+              return Tab(
+                height: 44,
+                child: Container(
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: AutoText(e.mDescription ?? e.mCategory ?? '', maxLines: 1, style: const TextStyle()),
+                ),
+              );
+            }).toList(),
+
+            overlayColor: WidgetStateProperty.all(Colors.transparent),
+            splashFactory: NoSplash.splashFactory,
+          ),
         ),
 
-        /// ✅ 右下：商品区（上下滑优先切二级，边界自动切一级）
+        /// 商品区
         Expanded(
           child: ExtendedTabBarView(
             controller: secondController,
-            link: true, // ✅ 关键：允许滚动传递到一级
+            link: true,
             scrollDirection: Axis.vertical,
             children: children.map((subCategory) => _buildProductList(context, subCategory)).toList(),
           ),
@@ -105,21 +203,105 @@ class HallView extends GetView<HallController> {
     );
   }
 
+  /// 商品网格
   Widget _buildProductList(BuildContext context, CategoryTreeProduct subCategory) {
-    return ListView.builder(
-      itemCount: subCategory.products?.length ?? 0,
-      itemBuilder: (context, index) {
-        final product = subCategory.products?[index];
-        return ListTile(
-          leading: _buildProductImageView(product?.imagesPath ?? ''),
-          title: Text(product?.mCode ?? ''),
-          subtitle: Text(product?.mDesc1 ?? ''),
-        );
-      },
+    final products = subCategory.products ?? [];
+
+    if (products.isEmpty) {
+      return const Center(
+        child: Text('暂无商品', style: TextStyle(color: Colors.grey)),
+      );
+    }
+
+    return GridView.builder(
+      padding: const EdgeInsets.all(20),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
+        childAspectRatio: 0.82,
+      ),
+      itemCount: products.length,
+      itemBuilder: (context, index) => _buildProductCard(context, products[index]),
+    );
+  }
+
+  /// 商品卡片
+  Widget _buildProductCard(BuildContext context, Product product) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [BoxShadow(color: Colors.black.withAlpha(20), blurRadius: 14, offset: Offset(0, 8))],
+          border: Border.all(color: Colors.grey[100]!, width: 1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// 图片
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+                child: _buildProductImageView(product.imagesPath ?? ''),
+              ),
+            ),
+
+            /// 文本
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    product.mCode ?? '',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    product.mDesc1 ?? '',
+                    style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w600),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildProductImageView(String imagePath) {
+    return CachedNetworkImage(
+      imageUrl: imagePath.isNotEmpty ? "$imagePath?ts=${DateTime.now().millisecondsSinceEpoch}" : "",
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
+      placeholder: (_, _) => Skeletonizer(
+        enabled: true,
+        effect: const ShimmerEffect(
+          baseColor: Color(0xFFE0E0E0),
+          highlightColor: Color(0xFFF5F5F5),
+          duration: Duration(milliseconds: 1200),
+        ),
+        child: Container(color: const Color(0xFFF0F0F0), width: 100, height: 100),
+      ),
+      errorWidget: (_, _, _) => Container(
+        color: const Color(0xFFF5F7FA),
+        alignment: Alignment.center,
+        child: Image.asset("assets/notfound.png", width: 80),
+      ),
+    );
+  }
+
+  /* Widget _buildProductImageView(String imagePath) {
     return Container(
       width: 100,
       height: 100,
@@ -150,6 +332,7 @@ class HallView extends GetView<HallController> {
       ),
     );
   }
+ */
 }
 
 /*class HallView extends GetView<HallController> {
