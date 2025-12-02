@@ -78,9 +78,6 @@ class MyApp extends StatelessWidget {
       supportedLocales: const [Locale('zh', 'CN'), Locale('zh', 'HK'), Locale('en', 'US')],
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       defaultTransition: Transition.noTransition,
-      theme: ThemeData(
-        appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF6750A4), foregroundColor: Colors.white),
-      ),
       builder: (context, child) {
         child = MediaQuery(
           data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0), alwaysUse24HourFormat: true),
