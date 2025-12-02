@@ -85,7 +85,7 @@ class CompanyInfo {
 }
 
 @HiveType(typeId: HiveTypeIds.catProductTreeModel)
-class CategoryTreeProduct extends HiveObject {
+class CategoryTreeProduct {
   @HiveField(1)
   final String? mCategory;
   @HiveField(2)
