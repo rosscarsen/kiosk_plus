@@ -297,6 +297,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "5.0.1"
+  extended_tabs:
+    dependency: "direct main"
+    description:
+      name: extended_tabs
+      sha256: c54d250f39af65033116672ca471fd0950d637dc9dd119c3d24c093295024430
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "5.0.0"
   fake_async:
     dependency: transitive
     description:
@@ -334,6 +342,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_auto_size_text:
+    dependency: "direct main"
+    description:
+      name: flutter_auto_size_text
+      sha256: eba9a0053ab13703eca8468754940f1567cfd364b5aa7225420ea5ec3c02b83e
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "4.1.0"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -917,30 +933,6 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.28.0"
-  scrollable_list_tab_scroller:
-    dependency: "direct main"
-    description:
-      name: scrollable_list_tab_scroller
-      sha256: e2f7b961b5eedde6dd94ceea73e39424db932adf2d914a99341f94dd49fc0265
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "3.1.1"
-  scrollable_positioned_list:
-    dependency: transitive
-    description:
-      name: scrollable_positioned_list
-      sha256: "1b54d5f1329a1e263269abc9e2543d90806131aa14fe7c6062a8054d57249287"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "0.3.8"
-  scrolls_to_top:
-    dependency: transitive
-    description:
-      name: scrolls_to_top
-      sha256: "8d6684d936b9c1a19c19ee93c836251ae9c803023290762a30cb7657e88e272e"
-      url: "https://pub.flutter-io.cn"
-    source: hosted
-    version: "2.1.1"
   shelf:
     dependency: transitive
     description:
@@ -1066,6 +1058,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.4.1"
+  sync_scroll_library:
+    dependency: transitive
+    description:
+      name: sync_scroll_library
+      sha256: "2e266be24bb7b34686a4b9c592f8a1cd29778060fadd9f5df8535f2410caf196"
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "1.1.0"
   synchronized:
     dependency: transitive
     description:
