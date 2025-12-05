@@ -35,6 +35,7 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
     super.onClose();
   }
 
+  /// 点击5次后触发 secret tap 事件，返回 true 表示触发成功
   bool handleSecretTap() {
     _secretTapTimer?.cancel();
     _secretTapCount++;
