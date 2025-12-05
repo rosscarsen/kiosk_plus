@@ -15,17 +15,7 @@ import 'hive_registrar.g.dart';
 void main() async {
   /// 设置UI
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Colors.transparent,
-      systemNavigationBarDividerColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      systemNavigationBarIconBrightness: Brightness.dark,
-      systemNavigationBarContrastEnforced: false,
-    ),
-  );
+  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   /// 初始hive
   await IsolatedHive.initFlutter();
@@ -91,7 +81,15 @@ class MyApp extends StatelessWidget {
 
         /// 提示框
         child = FlutterSmartDialog.init()(context, child);
-        return child;
+        return AnnotatedRegion<SystemUiOverlayStyle>(
+          value: const SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            systemNavigationBarColor: Colors.transparent,
+            systemNavigationBarDividerColor: Colors.transparent,
+            systemNavigationBarContrastEnforced: false,
+          ),
+          child: child,
+        );
       },
     );
   }
