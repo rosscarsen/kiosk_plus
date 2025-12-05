@@ -3,58 +3,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class AppColors {
-  /* static const primaryColor = Color(0xFF1976D2); // 主要颜色（蓝色）
-  static const deleteColor = Color(0xFFD32F2F); // 删除（红色）
-  static const successColor = Color(0xFF388E3C); // 成功（绿色）
-  static const warningColor = Color(0xFFF57C00); // 警告（橙色）
-  static const editColor = Color(0xFF0288D1); // 编辑（深蓝色）
-  static const exportColor = Color(0xFF512DA8); // 导出（紫色）
-  static const importColor = Color(0xFF009688); // 导入（青色）
-  static const uploadColor = Color(0xFF7B1FA2); // 上传（深紫色）
-  static const defaultColor = Color(0xFF9E9E9E); // 默认（灰色）
-  static const defaultTextColor = Color(0xFF212121); // 默认文本（深灰色）
-  static const copyColor = Color(0xFF6D4C41); // 复制（棕色）
-  static const disableColor = Color(0xFFBDBDBD); // 禁用（浅灰色） */
-  // 基础操作组
-  static const primaryColor = Color(0xFF1890FF);
-  static const deleteColor = Color(0xFFDC3545);
-  static const successColor = Color(0xFF52C41A);
-  static const warningColor = Color(0xFFFAAD14);
-
-  // 次级操作组
-  static const editColor = Color(0xFF1890FF);
-  static const exportColor = Color(0xFF13C2C2);
-  static const importColor = Color(0xFF6F42C1);
-  static const uploadColor = Color(0xFF007BFF);
-  static const addColor = Color(0xFF52C41A);
-  static const printColor = Color(0xFF0052CC);
-  // 中性色组
-  static const defaultColor = Color(0xFFBFBFBF);
-  static const defaultTextColor = Color(0xFF434343);
-  static const copyColor = Color(0xFF8C8C8C);
-
-  // 特殊功能
-  //static const disableColor = Color(0xFFD9D9D9);
-
-  static Color openColor = const Color.fromARGB(255, 121, 134, 203);
-  static Color disableColor = const Color.fromARGB(255, 117, 117, 117);
-  static Color enableColor = const Color.fromARGB(255, 66, 66, 66);
-
-  static const Color customTextColor = Color(0XFF2F2F2F);
-
-  static const Color tableHeaderColor = Color(0xFFF1F1F1);
-
-  // 生成随机颜色
-  static Color genRandomColor() {
-    const letters = '0123456789ABCDEF';
-    final Random random = Random();
-    String color = '#';
-
-    // 生成6个随机的字符
-    for (int i = 0; i < 6; i++) {
-      color += letters[random.nextInt(16)];
-    }
-
-    return Color(int.parse(color.replaceFirst('#', '0xFF')));
-  }
+  static const Color kPrimary = Color(0xFF436CFF); // 主色
+  static const Color kBg = Color(0xFFF6F7FB); // 全局背景
+  static const Color kTextMain = Color(0xFF1F2329); // 主文字
+  static const Color kTextSub = Color(0xFF8F959E); // 副文字
+  static const Color kPrice = Color(0xFFFF4D4F); // 价格
 }
