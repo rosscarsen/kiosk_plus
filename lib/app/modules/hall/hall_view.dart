@@ -3,85 +3,81 @@ import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:kiosk_plus/app/widgets/auto_text.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
-import 'package:scrollable_list_tab_scroller/scrollable_list_tab_scroller.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:view_tabbar/view_tabbar.dart';
 import '../../model/api_data_model/data_result_model.dart';
+import '../../translations/locale_keys.dart';
+import '../../utils/logger.dart';
 import 'hall_controller.dart';
 
 class HallView extends GetView<HallController> {
   const HallView({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+
       appBar: AppBar(
         elevation: 0,
+        centerTitle: true,
         title: GetBuilder<HallController>(
           id: "hall_app_bar",
-          builder: (_) {
-            return Text(
-              controller.companyName,
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
-            );
-          },
+          builder: (_) => Text(
+            controller.companyName,
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
+          ),
         ),
-        centerTitle: true,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 12.0),
             child: Row(
               spacing: 20,
               children: [
+                // Badge(label: Text('100'), child: Icon(Icons.shopping_cart)),
                 Badge.count(count: 5, child: const Icon(Icons.shopping_cart)),
                 Text('\$100.00', style: const TextStyle(fontSize: 20.0)),
               ],
             ),
           ),
         ],
-        shadowColor: Colors.black.withAlpha(15),
       ),
       body: _buildMain(context),
     );
   }
 
-  /// 构建主界面
   Widget _buildMain(BuildContext context) {
     return GetBuilder<HallController>(
-      id: "hall_left_nav",
+      id: "hall_body",
       builder: (_) {
         if (!controller.isDataReady) {
-          return const Center(child: CircularProgressIndicator());
+          return Skeletonizer(
+            enabled: true,
+            effect: const ShimmerEffect(
+              baseColor: Color(0xFFE0E0E0),
+              highlightColor: Color(0xFFF5F5F5),
+              duration: Duration(milliseconds: 1200),
+            ),
+            child: Card(
+              child: Container(color: const Color(0xFFF0F0F0), width: context.width, height: context.height),
+            ),
+          );
         }
-        return Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            // 一级分类
-            _buildLeftNav(context),
-            const VerticalDivider(width: 5, thickness: 1, indent: 5, endIndent: 5),
-            _buildRightContainer(context),
-          ],
-        );
-      },
-    );
 
-    return Row(
-      children: [
-        _buildLeftNav(context),
-        Expanded(child: _buildRightContainer(context)),
-      ],
+        return Row(children: [_buildLeftNav(context), const VerticalDivider(width: 1), _buildRightContainer(context)]);
+      },
     );
   }
 
-  /// 左侧一级分类
+  /// 左侧导航
   Widget _buildLeftNav(BuildContext context) {
     return ViewTabBar(
       width: 150,
-      itemCount: controller.categoryTreeProductList.length,
+      itemCount: controller.leftTabBarCount,
       direction: Axis.vertical,
       pageController: controller.leftPageController,
       tabBarController: controller.leftTabBarController,
-      animationDuration: Duration(milliseconds: 300),
+      animationDuration: const Duration(milliseconds: 300),
       builder: (context, index) {
         return ViewTabBarItem(
           index: index,
@@ -93,13 +89,16 @@ class HallView extends GetView<HallController> {
               builder: (context, color) {
                 return Container(
                   alignment: Alignment.centerLeft,
-                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                  padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-                  child: AutoText(
-                    controller.categoryTreeProductList[index].mDescription ?? "",
-                    style: TextStyle(color: color, fontWeight: FontWeight.w500, fontSize: 16.0),
-                    textAlign: TextAlign.left,
-                    maxLines: 1,
+                  padding: const EdgeInsets.all(10),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      child: Text(
+                        controller.categoryTreeProductList[index].mDescription ?? "",
+                        style: TextStyle(color: color, fontSize: 14),
+                      ),
+                    ),
                   ),
                 );
               },
@@ -107,184 +106,241 @@ class HallView extends GetView<HallController> {
           ),
         );
       },
-      indicator: StandardIndicator(color: controller.activeColor, width: 3.0, height: 30.0, left: 3),
+      indicator: StandardIndicator(color: controller.activeColor, width: 3, height: 30, left: 2),
     );
+  }
 
-    return Container(
-      constraints: BoxConstraints(maxWidth: 180),
-      width: context.width * 0.35,
-      child: GetBuilder<HallController>(
-        id: "hall_left_nav",
-        builder: (_) {
-          if (!controller.isDataReady) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return ListView.separated(
-            itemCount: controller.categoryTreeProductList.length,
-            separatorBuilder: (_, _) => Divider(color: Colors.black12),
-            itemBuilder: (context, index) {
-              final isSelected = controller.selectIndex == index;
-              return Row(
-                children: [
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 350),
-                    curve: Curves.easeInOut,
-                    height: 28,
-                    width: 4,
-                    decoration: BoxDecoration(
-                      color: isSelected ? Theme.of(context).primaryColor : Colors.transparent,
-                      borderRadius: BorderRadius.circular(2.0),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListTile(
-                      title: AutoText(
-                        controller.categoryTreeProductList[index].mDescription ?? '',
-                        style: TextStyle(
-                          fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                          color: isSelected ? Theme.of(context).primaryColor : Colors.black87,
-                        ),
-                      ),
-                      selected: isSelected,
-                      onTap: () {
-                        controller.changeLeftNavIndex(index);
-                      },
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
+  ///  右侧内容
+  Widget _buildRightContainer(BuildContext context) {
+    return Expanded(
+      child: PageView.builder(
+        itemCount: controller.leftTabBarCount,
+        controller: controller.leftPageController,
+        scrollDirection: Axis.vertical,
+        itemBuilder: (context, index) {
+          final List<CategoryTreeProduct> secondCateAndProductsData =
+              controller.categoryTreeProductList[index].children ?? [];
+          return CategoryAndProducts(childrenData: secondCateAndProductsData);
         },
       ),
     );
   }
+}
 
-  /// 右侧内容
-  Widget _buildRightContainer(BuildContext context) {
-    return Expanded(
-      child: GetBuilder<HallController>(
-        id: "hall_right_nav",
-        builder: (_) {
-          if (!controller.isDataReady) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ViewTabBar(
-                height: 36,
-                itemCount: controller.children?.length ?? 0,
-                direction: Axis.horizontal,
-                pageController: controller.rightPageController,
-                tabBarController: controller.rightTabBarController,
-                animationDuration: Duration(milliseconds: 300), // 取消动画 -> Duration.zero
-                builder: (context, index) {
-                  return ViewTabBarItem(
-                    index: index,
-                    transform: ScaleTransform(
-                      maxScale: 1.2,
-                      transform: ColorsTransform(
-                        normalColor: const Color(0xff606266),
-                        highlightColor: const Color(0xff436cff),
-                        builder: (context, color) {
-                          return Container(
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.only(top: 8.0, left: 10.0, right: 10.0, bottom: 8.0),
-                            child: Text(
-                              controller.children?[index].mDescription ?? '',
-                              style: TextStyle(color: color, fontWeight: FontWeight.w500, fontSize: 14.0),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  );
-                },
-                indicator: StandardIndicator(color: const Color(0xff436cff), width: 27.0, height: 2.0, bottom: 0),
-              ),
-              Expanded(
-                flex: 1,
-                child: PageView.builder(
-                  itemCount: controller.children?.length ?? 0,
-                  controller: controller.rightPageController,
-                  scrollDirection: Axis.vertical,
-                  itemBuilder: (context, index) {
+class CategoryAndProducts extends StatelessWidget {
+  CategoryAndProducts({super.key, required this.childrenData});
+
+  /// 第二级分类 & 商品数据
+  final pageController = PageController();
+  final tabBarController = ViewTabBarController();
+  final List<CategoryTreeProduct> childrenData;
+  final ctl = Get.find<HallController>();
+
+  /// 到达下一页 → 切换到下一【大类】
+  void _onReachNextPage(BuildContext context) {
+    if (!pageController.hasClients) return;
+
+    final int current = pageController.page!.round();
+    if (current < childrenData.length - 1) {
+      pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    } else {
+      // 第二级已经到底 → 切换第一级
+      ctl.jumpToNextCategory();
+    }
+  }
+
+  /// 到达上一页 → 切换到上一【大类】
+  void _onReachPrevPage(BuildContext context) {
+    if (!pageController.hasClients) return;
+
+    final int current = pageController.page!.round();
+
+    if (current > 0) {
+      pageController.previousPage(duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
+    } else {
+      // 第二级已经到顶 → 切换到上一【大类】
+      ctl.jumpToPrevCategory();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (childrenData.isEmpty) {
+      return Center(child: Text(LocaleKeys.noData.tr));
+    }
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ViewTabBar(
+          height: 36,
+          itemCount: childrenData.length,
+          direction: Axis.horizontal,
+          pageController: pageController,
+          tabBarController: tabBarController,
+          animationDuration: const Duration(milliseconds: 300),
+          builder: (context, index) {
+            return ViewTabBarItem(
+              index: index,
+              transform: ScaleTransform(
+                maxScale: 1.2,
+                transform: ColorsTransform(
+                  normalColor: const Color(0xff606266),
+                  highlightColor: const Color(0xff436cff),
+                  builder: (context, color) {
                     return Container(
-                      padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 16.0),
+                      alignment: Alignment.center,
+                      padding: const EdgeInsets.only(top: 8.0, left: 10.0, right: 10.0, bottom: 8.0),
                       child: Text(
-                        '这里渲染显示 ${controller.children?[index].mDescription ?? ''} 的内容',
-                        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Color(0xff606266)),
+                        childrenData[index].mDescription ?? "",
+                        style: TextStyle(color: color, fontWeight: FontWeight.w500, fontSize: 14.0),
                       ),
                     );
                   },
                 ),
               ),
-            ],
-          );
-
-          return ScrollableListTabScroller.defaultComponents(
-            itemCount: controller.children?.length ?? 0,
-            headerContainerProps: const HeaderContainerProps(height: 56),
-            tabBarProps: const TabBarProps(dividerColor: Colors.transparent),
-            tabBuilder: (context, index, active) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Text(
-                  controller.children?[index].mDescription ?? '',
-                  style: active ? const TextStyle(fontWeight: FontWeight.bold, color: Colors.green) : null,
-                ),
-              );
-            },
+            );
+          },
+          indicator: StandardIndicator(color: const Color(0xff436cff), width: 27.0, height: 2.0, bottom: 0),
+        ),
+        Expanded(
+          flex: 1,
+          child: PageView.builder(
+            itemCount: childrenData.length,
+            controller: pageController,
+            scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
-              final products = controller.children?[index].products;
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    controller.children?[index].mDescription ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                  ),
-                  _buildProductView(products),
-                ],
+              final products = childrenData[index].products ?? [];
+              return Container(
+                padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 16.0),
+                child: _buildProductList(context, products, index),
               );
             },
-          );
-        },
-      ),
+          ),
+        ),
+      ],
     );
   }
 
-  /// 构建产品列表
-  Widget _buildProductView(List<Product>? products) {
-    if (products == null || products.isEmpty) {
-      return const Center(
-        child: Text('无子分类', style: TextStyle(color: Colors.grey, fontSize: 16)),
+  /// 商品网格
+  Widget _buildProductList(BuildContext context, List<Product> products, index) {
+    if (products.isEmpty) {
+      bool lock = false;
+
+      void unlockLater() {
+        Future.delayed(const Duration(milliseconds: 400), () {
+          lock = false;
+        });
+      }
+
+      return GestureDetector(
+        behavior: HitTestBehavior.opaque, //  空白区域也能接收手势
+        onVerticalDragEnd: (details) {
+          final velocity = details.primaryVelocity ?? 0;
+          if (lock) return;
+
+          // ✅ 向上甩 → 下一页 / 下一大类
+          if (velocity < -300) {
+            lock = true;
+            logger.f("空数据页：手势向上 → 下一页");
+            _onReachNextPage(context);
+            unlockLater();
+          }
+
+          // ✅ 向下甩 → 上一页 / 上一大类
+          if (velocity > 300) {
+            lock = true;
+            logger.f("空数据页：手势向下 → 上一页");
+            _onReachPrevPage(context);
+            unlockLater();
+          }
+        },
+        child: Center(
+          child: Text(LocaleKeys.noData.tr, style: const TextStyle(color: Colors.grey)),
+        ),
       );
     }
-    /* return ResponsiveGridList(
-      minItemWidth: 180,
-      horizontalGridSpacing: 8,
-      verticalGridSpacing: 8,
-      listViewBuilderOptions: ListViewBuilderOptions(shrinkWrap: true),
-      children: products.map((product) {
-        return _buildProductCard(product);
-      }).toList(),
-    ); */
-    return GridView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: const EdgeInsets.all(8),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(maxCrossAxisExtent: 180),
-      itemCount: products.length,
-      itemBuilder: (context, index) {
-        return _buildProductCard(products[index]);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double width = constraints.maxWidth;
+        final double designWidth = width > 600 ? 200 : 150;
+        bool lock = false;
+        void unlockLater() {
+          Future.delayed(const Duration(milliseconds: 400), () {
+            lock = false;
+          });
+        }
+
+        return GestureDetector(
+          // 未超屏时：靠手势触发切换
+          onVerticalDragEnd: (details) {
+            final velocity = details.primaryVelocity ?? 0;
+            if (lock) return;
+            // 手指向上快速甩 → 下一页
+            if (velocity < -300) {
+              lock = true;
+              logger.f(" 未超屏：手势向上 → 下一页");
+              _onReachNextPage(context);
+              unlockLater();
+            }
+
+            // 手指向下快速甩 → 上一页
+            if (velocity > 300) {
+              lock = true;
+              logger.f("未超屏：手势向下 → 上一页");
+              _onReachPrevPage(context);
+              unlockLater();
+            }
+          },
+
+          child: NotificationListener<ScrollNotification>(
+            onNotification: (notification) {
+              // 只处理“真实发生滚动”的情况（超屏）
+              if (notification is ScrollUpdateNotification) {
+                final metrics = notification.metrics;
+                final double delta = notification.scrollDelta ?? 0;
+
+                final bool isAtBottom = metrics.pixels >= metrics.maxScrollExtent - 2;
+                final bool isAtTop = metrics.pixels <= metrics.minScrollExtent + 2;
+
+                if (lock) return false;
+
+                /// 已到底部 + 继续上滑 → 下一页
+                if (isAtBottom && delta > 12) {
+                  lock = true;
+                  logger.f("超屏：滚动到底 → 下一页");
+                  _onReachNextPage(context);
+                  unlockLater();
+                }
+
+                /// 已到顶部 + 继续下滑 → 上一页
+                if (isAtTop && delta < -12) {
+                  lock = true;
+                  logger.f("超屏：滚动到顶 → 上一页");
+                  _onReachPrevPage(context);
+                  unlockLater();
+                }
+              }
+              return false;
+            },
+
+            child: ResponsiveGridList(
+              listViewBuilderOptions: ListViewBuilderOptions(physics: const BouncingScrollPhysics()),
+              minItemWidth: designWidth,
+              horizontalGridSpacing: 8,
+              verticalGridSpacing: 8,
+              children: products.map((product) {
+                return _buildProductCard(product);
+              }).toList(),
+            ),
+          ),
+        );
       },
     );
   }
 
-  /// 构建产品卡片
+  /// 商品卡片
   Widget _buildProductCard(Product product) {
     return SizedBox(
       height: 240,
@@ -297,6 +353,7 @@ class HallView extends GetView<HallController> {
           children: [
             // 图片
             Expanded(child: _buildProductImageView(product.imagesPath ?? '')),
+
             // 文字区
             Padding(
               padding: const EdgeInsets.all(8),
@@ -323,7 +380,7 @@ class HallView extends GetView<HallController> {
     );
   }
 
-  /// 构建产品图片
+  /// ✅ 商品图片
   Widget _buildProductImageView(String imagePath) {
     return CachedNetworkImage(
       imageUrl: imagePath.isNotEmpty ? "$imagePath?ts=${DateTime.now().millisecondsSinceEpoch}" : "",
@@ -344,143 +401,6 @@ class HallView extends GetView<HallController> {
         alignment: Alignment.center,
         child: Image.asset("assets/notfound.png", width: 80),
       ),
-    );
-  }
-}
-
-class VerticalWithPinned extends StatelessWidget {
-  VerticalWithPinned({super.key});
-
-  final pageController = PageController();
-  final tabBarController = ViewTabBarController();
-
-  @override
-  Widget build(BuildContext context) {
-    const tags = ['板块1', '板块2', '板块3', '板块4', '板块5', '板块6', '板块7', '板块8', '板块9', '板块10', '板块11', '板块12', '板块13'];
-    const duration = Duration(milliseconds: 300);
-
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ViewTabBar(
-          width: 58,
-          itemCount: tags.length,
-          direction: Axis.vertical,
-          pageController: pageController,
-          tabBarController: tabBarController,
-          animationDuration: duration, // 取消动画 -> Duration.zero
-          builder: (context, index) {
-            return ViewTabBarItem(
-              index: index,
-              transform: ScaleTransform(
-                maxScale: 1.2,
-                transform: ColorsTransform(
-                  normalColor: const Color(0xff606266),
-                  highlightColor: const Color(0xff436cff),
-                  builder: (context, color) {
-                    return Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.only(top: 8.0, left: 10.0, right: 10.0, bottom: 8.0),
-                      child: Text(
-                        tags[index],
-                        style: TextStyle(color: color, fontWeight: FontWeight.w500, fontSize: 14.0),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            );
-          },
-          indicator: StandardIndicator(color: const Color(0xff436cff), width: 2.0, height: 25.0, right: 0),
-        ),
-        const VerticalDivider(width: 5, thickness: 1, indent: 5, endIndent: 5),
-        Expanded(
-          flex: 1,
-          child: PageView.builder(
-            itemCount: tags.length,
-            controller: pageController,
-            scrollDirection: Axis.vertical,
-            itemBuilder: (context, index) {
-              return Container(
-                padding: const EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0, bottom: 8.0),
-                child: Text(
-                  '这里渲染显示 ${tags[index]} 的内容',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Color(0xff606266)),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class HorizontalNoPinned extends StatelessWidget {
-  HorizontalNoPinned({super.key});
-
-  final pageController = PageController();
-  final tabBarController = ViewTabBarController();
-
-  @override
-  Widget build(BuildContext context) {
-    const tags = ['板块1', '板块2', '板块3', '板块4', '板块5', '板块6', '板块7', '板块8'];
-    const duration = Duration(milliseconds: 300);
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        ViewTabBar(
-          height: 36,
-          itemCount: tags.length,
-          direction: Axis.horizontal,
-          pageController: pageController,
-          tabBarController: tabBarController,
-          animationDuration: duration, // 取消动画 -> Duration.zero
-          builder: (context, index) {
-            return ViewTabBarItem(
-              index: index,
-              transform: ScaleTransform(
-                maxScale: 1.2,
-                transform: ColorsTransform(
-                  normalColor: const Color(0xff606266),
-                  highlightColor: const Color(0xff436cff),
-                  builder: (context, color) {
-                    return Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.only(top: 8.0, left: 10.0, right: 10.0, bottom: 8.0),
-                      child: Text(
-                        tags[index],
-                        style: TextStyle(color: color, fontWeight: FontWeight.w500, fontSize: 14.0),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            );
-          },
-          indicator: StandardIndicator(color: const Color(0xff436cff), width: 27.0, height: 2.0, bottom: 0),
-        ),
-        Expanded(
-          flex: 1,
-          child: PageView.builder(
-            itemCount: tags.length,
-            controller: pageController,
-            scrollDirection: Axis.vertical,
-            itemBuilder: (context, index) {
-              return Container(
-                padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 16.0),
-                child: Text(
-                  '这里渲染显示 ${tags[index]} 的内容',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400, color: Color(0xff606266)),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
     );
   }
 }
