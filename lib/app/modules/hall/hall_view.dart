@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:kiosk_plus/app/routes/app_pages.dart';
 import 'package:kiosk_plus/app/widgets/auto_text.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -394,45 +395,106 @@ class CategoryAndProducts extends StatelessWidget {
 
   /// 商品卡片
   Widget _buildProductCard(Product product) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: const [BoxShadow(color: Color(0x0A000000), blurRadius: 20, offset: Offset(0, 6))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
-            child: AspectRatio(aspectRatio: 1, child: _buildProductImageView(product.imagesPath ?? '')),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: () => Get.toNamed(Routes.PRODUCT_DETAIL, arguments: product),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        transform: Matrix4.identity(),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(color: const Color(0x1A000000), blurRadius: 12, offset: const Offset(0, 4), spreadRadius: 0),
+            BoxShadow(color: const Color(0x0F000000), blurRadius: 20, offset: const Offset(0, 8), spreadRadius: 0),
+          ],
+          border: Border.all(width: 1, color: const Color(0xFFF0F2F5)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // 图片区域
+            Stack(
               children: [
-                AutoText(
-                  product.mDesc1 ?? '',
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    height: 1.3,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.kTextMain,
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Container(
+                      decoration: const BoxDecoration(color: Color(0xFFF8FAFC)),
+                      child: _buildProductImageView(product.imagesPath ?? ''),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  '\$${product.mPrice}',
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.kPrice),
-                ),
+                // 角标位置
+                /* Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(color: AppColors.kPrimary, borderRadius: BorderRadius.circular(12)),
+                    child: const Text(
+                      '热销',
+                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: Colors.white),
+                    ),
+                  ),
+                ), */
               ],
             ),
-          ),
-        ],
+
+            // 内容区域
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // 产品名称
+                  AutoText(
+                    product.mDesc1 ?? '',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      height: 1.4,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.kTextMain,
+                      letterSpacing: 0.2,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '\$${product.mPrice}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.kPrice,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  //添加按钮（如果需要快速添加到购物车）
+                  // SizedBox(
+                  //   width: double.infinity,
+                  //   height: 32,
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       // 添加到购物车逻辑
+                  //     },
+                  //     style: ElevatedButton.styleFrom(
+                  //       backgroundColor: AppColors.kPrimary,
+                  //       foregroundColor: Colors.white,
+                  //       padding: EdgeInsets.zero,
+                  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  //       elevation: 0,
+                  //     ),
+                  //     child: const Text('添加', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                  //   ),
+                  // ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
