@@ -7,6 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:view_tabbar/view_tabbar.dart';
 import '../../model/api_data_model/data_result_model.dart';
 import '../../translations/locale_keys.dart';
+import '../../utils/constants.dart';
 import '../../utils/logger.dart';
 import 'hall_controller.dart';
 
@@ -17,31 +18,42 @@ class HallView extends GetView<HallController> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-
       appBar: AppBar(
-        elevation: 0,
+        elevation: 0.5,
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
         centerTitle: true,
         title: GetBuilder<HallController>(
           id: "hall_app_bar",
           builder: (_) => Text(
             controller.companyName,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Theme.of(context).primaryColor),
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+              color: AppColors.kTextMain,
+              letterSpacing: 0.3,
+            ),
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(color: AppColors.kBg, borderRadius: BorderRadius.circular(24)),
             child: Row(
-              spacing: 20,
               children: [
-                // Badge(label: Text('100'), child: Icon(Icons.shopping_cart)),
-                Badge.count(count: 5, child: const Icon(Icons.shopping_cart)),
-                Text('\$100.00', style: const TextStyle(fontSize: 20.0)),
+                Badge.count(count: 5, child: const Icon(Icons.shopping_cart, size: 18, color: AppColors.kPrimary)),
+                const SizedBox(width: 6),
+                const Text(
+                  '\$100.00',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.kPrimary),
+                ),
               ],
             ),
           ),
         ],
       ),
+
       body: _buildMain(context),
     );
   }
@@ -64,7 +76,12 @@ class HallView extends GetView<HallController> {
           );
         }
 
-        return Row(children: [_buildLeftNav(context), const VerticalDivider(width: 1), _buildRightContainer(context)]);
+        return ColoredBox(
+          color: const Color(0xFFF5F6FA),
+          child: Row(
+            children: [_buildLeftNav(context), const VerticalDivider(width: 1), _buildRightContainer(context)],
+          ),
+        );
       },
     );
   }
@@ -72,41 +89,48 @@ class HallView extends GetView<HallController> {
   /// 左侧导航
   Widget _buildLeftNav(BuildContext context) {
     return ViewTabBar(
-      width: 150,
+      width: 140,
       itemCount: controller.leftTabBarCount,
       direction: Axis.vertical,
       pageController: controller.leftPageController,
       tabBarController: controller.leftTabBarController,
-      animationDuration: const Duration(milliseconds: 300),
+      animationDuration: const Duration(milliseconds: 250),
+
       builder: (context, index) {
         return ViewTabBarItem(
           index: index,
-          transform: ScaleTransform(
-            maxScale: 1,
-            transform: ColorsTransform(
-              normalColor: const Color(0xff606266),
-              highlightColor: controller.activeColor,
-              builder: (context, color) {
-                return Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.all(10),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                      child: Text(
-                        controller.categoryTreeProductList[index].mDescription ?? "",
-                        style: TextStyle(color: color, fontSize: 14),
-                      ),
-                    ),
+          transform: ColorsTransform(
+            normalColor: AppColors.kTextSub,
+            highlightColor: AppColors.kPrimary,
+            builder: (context, color) {
+              final bool selected = color == AppColors.kPrimary;
+
+              return AnimatedContainer(
+                width: double.infinity,
+                duration: const Duration(milliseconds: 200),
+                margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+                decoration: BoxDecoration(
+                  color: selected ? AppColors.kPrimary.withAlpha(20) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  controller.categoryTreeProductList[index].mDescription ?? "",
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 13,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         );
       },
-      indicator: StandardIndicator(color: controller.activeColor, width: 3, height: 30, left: 2),
+
+      indicator: StandardIndicator(color: AppColors.kPrimary, width: 3, height: 26, left: 2),
     );
   }
 
@@ -166,43 +190,61 @@ class CategoryAndProducts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (childrenData.isEmpty) {
-      return Center(child: Text(LocaleKeys.noData.tr));
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.inbox_outlined, size: 64, color: Colors.grey.shade400),
+            const SizedBox(height: 12),
+            Text(
+              LocaleKeys.noData.tr,
+              style: const TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+      );
     }
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         ViewTabBar(
-          height: 36,
+          height: 40,
           itemCount: childrenData.length,
           direction: Axis.horizontal,
           pageController: pageController,
           tabBarController: tabBarController,
-          animationDuration: const Duration(milliseconds: 300),
+          animationDuration: const Duration(milliseconds: 250),
+
           builder: (context, index) {
             return ViewTabBarItem(
               index: index,
-              transform: ScaleTransform(
-                maxScale: 1.2,
-                transform: ColorsTransform(
-                  normalColor: const Color(0xff606266),
-                  highlightColor: const Color(0xff436cff),
-                  builder: (context, color) {
-                    return Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.only(top: 8.0, left: 10.0, right: 10.0, bottom: 8.0),
-                      child: Text(
-                        childrenData[index].mDescription ?? "",
-                        style: TextStyle(color: color, fontWeight: FontWeight.w500, fontSize: 14.0),
+              transform: ColorsTransform(
+                normalColor: AppColors.kTextSub,
+                highlightColor: AppColors.kPrimary,
+                builder: (context, color) {
+                  final bool selected = color == AppColors.kPrimary;
+
+                  return Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    alignment: Alignment.center,
+                    child: Text(
+                      childrenData[index].mDescription ?? "",
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 14,
+                        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                       ),
-                    );
-                  },
-                ),
+                    ),
+                  );
+                },
               ),
             );
           },
-          indicator: StandardIndicator(color: const Color(0xff436cff), width: 27.0, height: 2.0, bottom: 0),
+
+          indicator: StandardIndicator(color: AppColors.kPrimary, width: 20, height: 3, bottom: 4),
         ),
+
         Expanded(
           flex: 1,
           child: PageView.builder(
@@ -256,7 +298,17 @@ class CategoryAndProducts extends StatelessWidget {
           }
         },
         child: Center(
-          child: Text(LocaleKeys.noData.tr, style: const TextStyle(color: Colors.grey)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.inbox_outlined, size: 64, color: Colors.grey.shade400),
+              const SizedBox(height: 12),
+              Text(
+                LocaleKeys.noData.tr,
+                style: const TextStyle(color: Colors.grey, fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -342,40 +394,45 @@ class CategoryAndProducts extends StatelessWidget {
 
   /// 商品卡片
   Widget _buildProductCard(Product product) {
-    return SizedBox(
-      height: 240,
-      child: Card(
-        elevation: 2,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // 图片
-            Expanded(child: _buildProductImageView(product.imagesPath ?? '')),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: const [BoxShadow(color: Color(0x0A000000), blurRadius: 20, offset: Offset(0, 6))],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(18)),
+            child: AspectRatio(aspectRatio: 1, child: _buildProductImageView(product.imagesPath ?? '')),
+          ),
 
-            // 文字区
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  AutoText(
-                    product.mDesc1 ?? '',
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AutoText(
+                  product.mDesc1 ?? '',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    height: 1.3,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.kTextMain,
                   ),
-                  const SizedBox(height: 6),
-                  AutoText(
-                    '\$${product.mPrice}',
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.red),
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '\$${product.mPrice}',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.kPrice),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
