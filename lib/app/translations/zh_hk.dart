@@ -15,6 +15,7 @@ Map<String, String> zhHK = {
   LocaleKeys.edit: "編輯",
   LocaleKeys.add: "添加",
   LocaleKeys.delete: "刪除",
+  LocaleKeys.hall: "大厅",
   LocaleKeys.paramSuccess: "%s成功",
   LocaleKeys.paramFailed: "%s失敗",
   LocaleKeys.companyID: "公司ID",
@@ -71,4 +72,5 @@ Map<String, String> zhHK = {
   LocaleKeys.loginInvalid: "登錄失效，請重新登錄",
   LocaleKeys.welcomeToTheSelfServiceOrderingSystem: "歡迎使用自助點餐系統",
   LocaleKeys.openSettingsFailed: "打開設置失敗",
+  LocaleKeys.noData: "暫無商品",
 };

@@ -15,6 +15,7 @@ Map<String, String> get zhCN => {
   LocaleKeys.edit: "编辑",
   LocaleKeys.add: "添加",
   LocaleKeys.delete: "删除",
+  LocaleKeys.hall: "大厅",
   LocaleKeys.paramSuccess: "%s成功",
   LocaleKeys.paramFailed: "%s失败",
   LocaleKeys.companyID: "公司ID",
@@ -71,4 +72,5 @@ Map<String, String> get zhCN => {
   LocaleKeys.loginInvalid: "登录失效",
   LocaleKeys.welcomeToTheSelfServiceOrderingSystem: "欢迎使用自助点餐系统",
   LocaleKeys.openSettingsFailed: "打开设置失败",
+  LocaleKeys.noData: "暂无商品",
 };

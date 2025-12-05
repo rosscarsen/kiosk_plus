@@ -15,6 +15,7 @@ Map<String, String> get enUS => {
   LocaleKeys.edit: "Edit",
   LocaleKeys.add: "Add",
   LocaleKeys.delete: "Delete",
+  LocaleKeys.hall: "Hall",
   LocaleKeys.paramSuccess: "%s Success",
   LocaleKeys.paramFailed: "%s Failed",
   LocaleKeys.companyID: "Company ID",
@@ -71,4 +72,5 @@ Map<String, String> get enUS => {
   LocaleKeys.loginInvalid: "Login Invalid",
   LocaleKeys.welcomeToTheSelfServiceOrderingSystem: "Welcome to the Self-Service Ordering System",
   LocaleKeys.openSettingsFailed: "Open Settings Failed",
+  LocaleKeys.noData: "No Product",
 };

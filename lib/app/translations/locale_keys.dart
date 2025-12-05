@@ -70,4 +70,6 @@ abstract class LocaleKeys {
   static const String loginInvalid = "loginInvalid";
   static const String welcomeToTheSelfServiceOrderingSystem = "welcomeToTheSelfServiceOrderingSystem";
   static const String openSettingsFailed = "openSettingsFailed";
+  static const String hall = "hall";
+  static const String noData = "noData";
 }
