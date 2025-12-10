@@ -72,4 +72,8 @@ abstract class LocaleKeys {
   static const String openSettingsFailed = "openSettingsFailed";
   static const String hall = "hall";
   static const String noData = "noData";
+  static const String remarks = "remarks";
+  static const String setMeal = "setMeal";
+  static const String totalPiece = "totalPiece";
+  static const String addToCart = "addToCart";
 }
