@@ -7,6 +7,7 @@ abstract class Routes {
   static const HOME = _Paths.HOME;
   static const BLUETOOTH_SETTING_VIEW = _Paths.BLUETOOTH_SETTING_VIEW;
   static const HALL = _Paths.HALL;
+  static const PRODUCT_DETAIL = _Paths.PRODUCT_DETAIL;
 }
 
 abstract class _Paths {
@@ -15,4 +16,5 @@ abstract class _Paths {
   static const HOME = '/home';
   static const BLUETOOTH_SETTING_VIEW = '/bluetooth-setting-view';
   static const HALL = '/hall';
+  static const PRODUCT_DETAIL = '/product-detail';
 }
