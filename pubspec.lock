@@ -249,6 +249,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.7.11"
+  decimal:
+    dependency: "direct main"
+    description:
+      name: decimal
+      sha256: fc706a5618b81e5b367b01dd62621def37abc096f2b46a9bd9068b64c1fa36d0
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.2.4"
   dio:
     dependency: "direct main"
     description:
@@ -901,6 +909,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "3.2.2"
+  rational:
+    dependency: transitive
+    description:
+      name: rational
+      sha256: cb808fb6f1a839e6fc5f7d8cb3b0a10e1db48b3be102de73938c627f0b636336
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.2.3"
   responsive_grid_list:
     dependency: "direct main"
     description:
@@ -954,6 +970,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  sliver_sticky_collapsable_panel:
+    dependency: "direct main"
+    description:
+      name: sliver_sticky_collapsable_panel
+      sha256: d4e8a50d811925d324f6b6cdde287a53bf99464dcfc200dba5977da09f8e777c
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "3.0.2"
   source_gen:
     dependency: transitive
     description:
@@ -1050,6 +1074,14 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.4.1"
+  super_sliver_list:
+    dependency: "direct main"
+    description:
+      name: super_sliver_list
+      sha256: b1e1e64d08ce40e459b9bb5d9f8e361617c26b8c9f3bb967760b0f436b6e3f56
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.4.1"
   synchronized:
     dependency: transitive
     description:
