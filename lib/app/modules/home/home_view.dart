@@ -22,7 +22,7 @@ class HomeView extends GetView<HomeController> {
     return Scaffold(
       backgroundColor: Colors.transparent,
       extendBodyBehindAppBar: true,
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       extendBody: true,
       body: Container(
         width: width,
