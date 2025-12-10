@@ -73,4 +73,7 @@ Map<String, String> zhHK = {
   LocaleKeys.welcomeToTheSelfServiceOrderingSystem: "歡迎使用自助點餐系統",
   LocaleKeys.openSettingsFailed: "打開設置失敗",
   LocaleKeys.noData: "暫無商品",
+  LocaleKeys.remarks: "備註",
+  LocaleKeys.setMeal: "套餐",
+  LocaleKeys.totalPiece: "共%s件",
 };

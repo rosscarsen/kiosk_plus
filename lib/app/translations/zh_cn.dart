@@ -58,7 +58,7 @@ Map<String, String> get zhCN => {
   LocaleKeys.subtotal: "小计",
   LocaleKeys.serviceFee: "服务费",
   LocaleKeys.discount: "折扣",
-  LocaleKeys.total: "总金额",
+  LocaleKeys.total: "总计",
   LocaleKeys.paymentAmount: "支付金额",
   LocaleKeys.change: "找零",
   LocaleKeys.points: "积分",
@@ -73,4 +73,8 @@ Map<String, String> get zhCN => {
   LocaleKeys.welcomeToTheSelfServiceOrderingSystem: "欢迎使用自助点餐系统",
   LocaleKeys.openSettingsFailed: "打开设置失败",
   LocaleKeys.noData: "暂无商品",
+  LocaleKeys.remarks: "备注",
+  LocaleKeys.setMeal: "套餐",
+  LocaleKeys.totalPiece: "共%s件",
+  LocaleKeys.addToCart: "加入购物车",
 };

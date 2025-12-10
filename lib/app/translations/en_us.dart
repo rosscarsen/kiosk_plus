@@ -73,4 +73,8 @@ Map<String, String> get enUS => {
   LocaleKeys.welcomeToTheSelfServiceOrderingSystem: "Welcome to the Self-Service Ordering System",
   LocaleKeys.openSettingsFailed: "Open Settings Failed",
   LocaleKeys.noData: "No Product",
+  LocaleKeys.remarks: "Remarks",
+  LocaleKeys.setMeal: "Set Meal",
+  LocaleKeys.totalPiece: "Total %s Pieces",
+  LocaleKeys.addToCart: "Add to Cart",
 };
