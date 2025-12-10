@@ -15,8 +15,8 @@ class Config {
   static String companyInfo = 'companyInfo'; //公司信息
 
   /// API基础地址
-  //static String baseurl = "https://api.friendsclub.com/kioskPlus";
-  static String baseurl = "http://www.api.cn/kioskPlus";
+  static String baseurl = "https://api.friendsclub.com/kioskPlus";
+  //static String baseurl = "http://www.api.cn/kioskPlus";
   // 登录
   static String login = "/Login/login";
   // 获取数据列表
