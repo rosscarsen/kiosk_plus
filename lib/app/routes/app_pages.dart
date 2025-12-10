@@ -8,6 +8,8 @@ import '../modules/home/home_binding.dart';
 import '../modules/home/home_view.dart';
 import '../modules/login/login_binding.dart';
 import '../modules/login/login_view.dart';
+import '../modules/product_detail/product_detail_binding.dart';
+import '../modules/product_detail/product_detail_view.dart';
 
 part 'app_routes.dart';
 
@@ -34,6 +36,11 @@ class AppPages {
       name: _Paths.HALL,
       page: () => const HallView(),
       binding: HallBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRODUCT_DETAIL,
+      page: () => const ProductDetailView(),
+      binding: ProductDetailBinding(),
     ),
   ];
 }
