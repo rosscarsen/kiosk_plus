@@ -121,7 +121,7 @@ class HallView extends GetView<HallController> {
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     color: color,
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                   ),
                 ),
