@@ -22,12 +22,6 @@ class ProductDetailView extends GetView<ProductDetailController> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       extendBody: true,
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          controller.calculateSetMealAmount();
-        },
-      ),
-      //appBar: AppBar(title: Text('')),
       body: SafeArea(
         bottom: true,
         child: GetBuilder<ProductDetailController>(
@@ -117,7 +111,14 @@ class ProductDetailView extends GetView<ProductDetailController> {
                   trailing: ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: AppColors.kPrice, foregroundColor: Colors.white),
                     child: Text(LocaleKeys.addToCart.tr),
-                    onPressed: () {},
+                    onPressed: () {
+                      if (ctl.formKey.currentState?.validate() ?? false) {
+                        logger.f(ctl.formKey.currentState?.value);
+                      } else {
+                        // 验证失败，处理错误
+                        logger.e("Form validation failed");
+                      }
+                    },
                   ),
                 );
               },
@@ -367,6 +368,13 @@ class ProductDetailView extends GetView<ProductDetailController> {
                 FormBuilderField<List<String>>(
                   name: 'setMealRemark_$index',
                   initialValue: controller.selectSetMeal,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return LocaleKeys.requireItemsParam.trArgs(["1"]);
+                    }
+                    return null;
+                  },
+
                   onChanged: (List<String>? values) {
                     final currentValues = values ?? [];
                     if (currentValues.isEmpty) {
@@ -401,7 +409,6 @@ class ProductDetailView extends GetView<ProductDetailController> {
                           )
                           .toList(),
                       onChange: (allSelectedItems, selectedItem) {
-                        logger.f([allSelectedItems, selectedItem]);
                         field.didChange(allSelectedItems);
                         if (allSelectedItems.isEmpty) {
                           ctl.changeSelectSetMeal(item: selectedItem, isAdd: false);
