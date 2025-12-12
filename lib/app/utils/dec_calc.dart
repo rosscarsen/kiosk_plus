@@ -165,4 +165,14 @@ class DecUtil {
     final formatter = DecimalFormatter(NumberFormat("#,##0.00", "en-US"));
     return formatter.format(amount);
   }
+
+  /// 计算折扣后的金額
+  ///
+  /// [price] 商品金額
+  /// [discount] 折扣率（0-1之間）
+  /// 返回折扣後的金額
+  static double calculateDiscountedAmount(dynamic amount, dynamic discount) {
+    final Decimal decAmount = DecUtil.from(amount);
+    return DecUtil.sub(decAmount, DecUtil.mul(decAmount, DecUtil.div(discount, Decimal.fromInt(100)))).toDouble();
+  }
 }
