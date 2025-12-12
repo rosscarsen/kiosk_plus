@@ -196,7 +196,7 @@ class ProductDetailController extends GetxController {
         case 2:
           // ✅ 倍数 = 基础金额 * remarkPrice
           final Decimal baseAmount = DecUtil.mul(productPrice, productQty);
-          multiAmount = DecUtil.mul(baseAmount, remarkPrice);
+          multiAmount = DecUtil.add(multiAmount, DecUtil.mul(baseAmount, remarkPrice));
           break;
       }
     }
