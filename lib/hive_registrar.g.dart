@@ -15,8 +15,6 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(LoginDataModelAdapter());
     registerAdapter(ProductAdapter());
     registerAdapter(ProductRemarkAdapter());
-    registerAdapter(ProductSetMealAdapter());
-    registerAdapter(ProductSetMealLimitAdapter());
   }
 }
 
@@ -29,7 +27,5 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(LoginDataModelAdapter());
     registerAdapter(ProductAdapter());
     registerAdapter(ProductRemarkAdapter());
-    registerAdapter(ProductSetMealAdapter());
-    registerAdapter(ProductSetMealLimitAdapter());
   }
 }

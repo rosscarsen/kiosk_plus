@@ -7,8 +7,6 @@ class HiveTypeIds {
   static const int dataResultModel = 3;
   static const int catProductTreeModel = 4;
   static const int productModel = 5;
-  static const int productSetMealModel = 6;
-  static const int productSetMealLimitModel = 7;
-  static const int productRemarksModel = 8;
-  static const int company = 9;
+  static const int productRemarksModel = 6;
+  static const int company = 7;
 }
