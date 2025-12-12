@@ -1,15 +1,16 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:kiosk_plus/app/routes/app_pages.dart';
-import 'package:kiosk_plus/app/widgets/auto_text.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:view_tabbar/view_tabbar.dart';
+
 import '../../model/api_data_model/data_result_model.dart';
+import '../../routes/app_pages.dart';
 import '../../translations/locale_keys.dart';
 import '../../utils/constants.dart';
 import '../../utils/logger.dart';
+import '../../widgets/auto_text.dart';
 import 'hall_controller.dart';
 
 class HallView extends GetView<HallController> {
@@ -501,25 +502,27 @@ class CategoryAndProducts extends StatelessWidget {
 
   /// ✅ 商品图片
   Widget _buildProductImageView(String imagePath) {
-    return CachedNetworkImage(
-      imageUrl: imagePath.isNotEmpty ? "$imagePath?ts=${DateTime.now().millisecondsSinceEpoch}" : "",
-      fit: BoxFit.cover,
-      width: double.infinity,
-      height: double.infinity,
-      placeholder: (_, _) => Skeletonizer(
-        enabled: true,
-        effect: const ShimmerEffect(
-          baseColor: Color(0xFFE0E0E0),
-          highlightColor: Color(0xFFF5F5F5),
-          duration: Duration(milliseconds: 1200),
-        ),
-        child: Container(color: const Color(0xFFF0F0F0), width: 100, height: 100),
-      ),
-      errorWidget: (_, _, _) => Container(
-        color: const Color(0xFFF5F7FA),
-        alignment: Alignment.center,
-        child: Image.asset("assets/notfound.png", width: 80),
-      ),
-    );
+    return imagePath.isEmpty
+        ? Image.asset("assets/notfound.png")
+        : CachedNetworkImage(
+            imageUrl: imagePath.isNotEmpty ? "$imagePath?ts=${DateTime.now().millisecondsSinceEpoch}" : "",
+            fit: BoxFit.cover,
+            width: double.infinity,
+            height: double.infinity,
+            placeholder: (_, _) => Skeletonizer(
+              enabled: true,
+              effect: const ShimmerEffect(
+                baseColor: Color(0xFFE0E0E0),
+                highlightColor: Color(0xFFF5F5F5),
+                duration: Duration(milliseconds: 1200),
+              ),
+              child: Container(color: const Color(0xFFF0F0F0), width: 100, height: 100),
+            ),
+            errorWidget: (_, _, _) => Container(
+              color: const Color(0xFFF5F7FA),
+              alignment: Alignment.center,
+              child: Image.asset("assets/notfound.png", width: 80),
+            ),
+          );
   }
 }

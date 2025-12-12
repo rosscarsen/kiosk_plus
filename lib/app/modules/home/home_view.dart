@@ -120,8 +120,6 @@ class HomeView extends GetView<HomeController> {
                       Config.companyInfo,
                       Config.categoryTreeProduct,
                       Config.productRemarks,
-                      Config.productSetMeal,
-                      Config.productSetMealLimit,
                     ]);
                     Get.offAllNamed(Routes.LOGIN);
                   },
