@@ -76,4 +76,7 @@ Map<String, String> zhHK = {
   LocaleKeys.remarks: "備註",
   LocaleKeys.setMeal: "套餐",
   LocaleKeys.totalPiece: "共%s件",
+  LocaleKeys.addToCart: "加入購物車",
+  LocaleKeys.selectUpToItemsParam: "最多選擇%s項",
+  LocaleKeys.requireItemsParam: "必須選擇%s項",
 };

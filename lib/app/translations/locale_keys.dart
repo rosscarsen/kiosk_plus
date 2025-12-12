@@ -76,4 +76,6 @@ abstract class LocaleKeys {
   static const String setMeal = "setMeal";
   static const String totalPiece = "totalPiece";
   static const String addToCart = "addToCart";
+  static const String selectUpToItemsParam = "selectUpToItemsParam";
+  static const String requireItemsParam = "requireItemsParam";
 }

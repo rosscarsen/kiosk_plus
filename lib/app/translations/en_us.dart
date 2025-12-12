@@ -77,4 +77,6 @@ Map<String, String> get enUS => {
   LocaleKeys.setMeal: "Set Meal",
   LocaleKeys.totalPiece: "Total %s Pieces",
   LocaleKeys.addToCart: "Add to Cart",
+  LocaleKeys.selectUpToItemsParam: "Select up to %s items",
+  LocaleKeys.requireItemsParam: "Require %s items",
 };
