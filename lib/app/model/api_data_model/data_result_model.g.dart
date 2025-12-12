@@ -20,16 +20,14 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
       calendarDiscount: fields[1] as String?,
       categoryTreeProduct: (fields[2] as List?)?.cast<CategoryTreeProduct>(),
       productRemarks: (fields[3] as List?)?.cast<ProductRemark>(),
-      productSetMeal: (fields[4] as List?)?.cast<ProductSetMeal>(),
-      productSetMealLimit: (fields[5] as List?)?.cast<ProductSetMealLimit>(),
-      companyInfo: fields[6] as CompanyInfo?,
+      companyInfo: fields[4] as CompanyInfo?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DataResultModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(4)
       ..writeByte(1)
       ..write(obj.calendarDiscount)
       ..writeByte(2)
@@ -37,10 +35,6 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
       ..writeByte(3)
       ..write(obj.productRemarks)
       ..writeByte(4)
-      ..write(obj.productSetMeal)
-      ..writeByte(5)
-      ..write(obj.productSetMealLimit)
-      ..writeByte(6)
       ..write(obj.companyInfo);
   }
 
@@ -57,7 +51,7 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
 
 class CompanyInfoAdapter extends TypeAdapter<CompanyInfo> {
   @override
-  final typeId = 9;
+  final typeId = 7;
 
   @override
   CompanyInfo read(BinaryReader reader) {
@@ -211,88 +205,9 @@ class ProductAdapter extends TypeAdapter<Product> {
           typeId == other.typeId;
 }
 
-class ProductSetMealAdapter extends TypeAdapter<ProductSetMeal> {
-  @override
-  final typeId = 6;
-
-  @override
-  ProductSetMeal read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return ProductSetMeal(
-      tProductId: (fields[1] as num?)?.toInt(),
-      mName: fields[2] as String?,
-      mBarcode: fields[3] as String?,
-      mPrice: fields[4] as String?,
-      mPrice2: fields[5] as String?,
-      mQty: fields[6] as String?,
-      mRemarks: fields[7] as String?,
-      mProductCode: fields[8] as String?,
-      mId: (fields[9] as num?)?.toInt(),
-      mFlag: (fields[10] as num?)?.toInt(),
-      mTime: fields[11] as String?,
-      mPCode: fields[12] as String?,
-      mStep: (fields[13] as num?)?.toInt(),
-      mDefault: (fields[14] as num?)?.toInt(),
-      mSort: (fields[15] as num?)?.toInt(),
-      soldOut: (fields[16] as num?)?.toInt(),
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, ProductSetMeal obj) {
-    writer
-      ..writeByte(16)
-      ..writeByte(1)
-      ..write(obj.tProductId)
-      ..writeByte(2)
-      ..write(obj.mName)
-      ..writeByte(3)
-      ..write(obj.mBarcode)
-      ..writeByte(4)
-      ..write(obj.mPrice)
-      ..writeByte(5)
-      ..write(obj.mPrice2)
-      ..writeByte(6)
-      ..write(obj.mQty)
-      ..writeByte(7)
-      ..write(obj.mRemarks)
-      ..writeByte(8)
-      ..write(obj.mProductCode)
-      ..writeByte(9)
-      ..write(obj.mId)
-      ..writeByte(10)
-      ..write(obj.mFlag)
-      ..writeByte(11)
-      ..write(obj.mTime)
-      ..writeByte(12)
-      ..write(obj.mPCode)
-      ..writeByte(13)
-      ..write(obj.mStep)
-      ..writeByte(14)
-      ..write(obj.mDefault)
-      ..writeByte(15)
-      ..write(obj.mSort)
-      ..writeByte(16)
-      ..write(obj.soldOut);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ProductSetMealAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
 class ProductRemarkAdapter extends TypeAdapter<ProductRemark> {
   @override
-  final typeId = 8;
+  final typeId = 6;
 
   @override
   ProductRemark read(BinaryReader reader) {
@@ -347,58 +262,6 @@ class ProductRemarkAdapter extends TypeAdapter<ProductRemark> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is ProductRemarkAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class ProductSetMealLimitAdapter extends TypeAdapter<ProductSetMealLimit> {
-  @override
-  final typeId = 7;
-
-  @override
-  ProductSetMealLimit read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return ProductSetMealLimit(
-      setLimitId: (fields[1] as num?)?.toInt(),
-      tProductId: (fields[2] as num?)?.toInt(),
-      mStep: (fields[3] as num?)?.toInt(),
-      limitMax: (fields[4] as num?)?.toInt(),
-      obligatory: (fields[5] as num?)?.toInt(),
-      zhtw: fields[6] as String?,
-      enus: fields[7] as String?,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, ProductSetMealLimit obj) {
-    writer
-      ..writeByte(7)
-      ..writeByte(1)
-      ..write(obj.setLimitId)
-      ..writeByte(2)
-      ..write(obj.tProductId)
-      ..writeByte(3)
-      ..write(obj.mStep)
-      ..writeByte(4)
-      ..write(obj.limitMax)
-      ..writeByte(5)
-      ..write(obj.obligatory)
-      ..writeByte(6)
-      ..write(obj.zhtw)
-      ..writeByte(7)
-      ..write(obj.enus);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is ProductSetMealLimitAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
