@@ -1,13 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:decimal/decimal.dart';
 import 'package:easy_image_viewer/easy_image_viewer.dart';
+import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-
+import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import '../../translations/locale_keys.dart';
 import '../../utils/constants.dart';
+import '../../utils/custom_dialog.dart';
 import '../../utils/dec_calc.dart';
+import '../../utils/logger.dart';
 import '../../widgets/cart_quantity_stepper.dart';
 import 'product_detail_controller.dart';
 
@@ -18,42 +22,44 @@ class ProductDetailView extends GetView<ProductDetailController> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       extendBody: true,
-      /*  floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final c = DecUtil.div(1, 100);
-          print(c);
+          controller.calculateSetMealAmount();
         },
-      ), */
+      ),
       //appBar: AppBar(title: Text('')),
-      body: GetBuilder<ProductDetailController>(
-        init: ProductDetailController(),
-        id: "body",
-        builder: (ctl) {
-          // 数据加载完成前显示骨架屏
-          if (!ctl.isDataReady) {
-            return Skeletonizer(
-              enabled: true,
-              effect: const ShimmerEffect(
-                baseColor: Color(0xFFE0E0E0),
-                highlightColor: Color(0xFFF5F5F5),
-                duration: Duration(milliseconds: 1200),
-              ),
-              child: ListView.builder(
-                itemCount: 7,
-                itemBuilder: (context, index) {
-                  return Card(
-                    child: ListTile(
-                      title: Text('Item number $index as title'),
-                      subtitle: const Text('Subtitle here'),
-                      trailing: const Icon(Icons.ac_unit),
-                    ),
-                  );
-                },
-              ),
-            );
-          }
-          return _buildMain(context, ctl);
-        },
+      body: SafeArea(
+        bottom: true,
+        child: GetBuilder<ProductDetailController>(
+          init: ProductDetailController(),
+          id: "body",
+          builder: (ctl) {
+            // 数据加载完成前显示骨架屏
+            if (!ctl.isDataReady) {
+              return Skeletonizer(
+                enabled: true,
+                effect: const ShimmerEffect(
+                  baseColor: Color(0xFFE0E0E0),
+                  highlightColor: Color(0xFFF5F5F5),
+                  duration: Duration(milliseconds: 1200),
+                ),
+                child: ListView.builder(
+                  itemCount: 7,
+                  itemBuilder: (context, index) {
+                    return Card(
+                      child: ListTile(
+                        title: Text('Item number $index as title'),
+                        subtitle: const Text('Subtitle here'),
+                        trailing: const Icon(Icons.ac_unit),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }
+            return _buildMain(context, ctl);
+          },
+        ),
       ),
 
       bottomNavigationBar: ColoredBox(
@@ -67,6 +73,28 @@ class ProductDetailView extends GetView<ProductDetailController> {
             GetBuilder<ProductDetailController>(
               id: "bottom",
               builder: (ctl) {
+                // 数据加载完成前显示骨架屏
+                if (!ctl.isDataReady) {
+                  return Skeletonizer(
+                    enabled: true,
+                    effect: const ShimmerEffect(
+                      baseColor: Color(0xFFE0E0E0),
+                      highlightColor: Color(0xFFF5F5F5),
+                      duration: Duration(milliseconds: 1200),
+                    ),
+                    child: ListTile(
+                      title: Text('Item number  as title'),
+                      subtitle: const Text('Subtitle here'),
+                      trailing: const Icon(Icons.ac_unit),
+                    ),
+                  );
+                }
+                String subtitle = LocaleKeys.totalPiece.trArgs([ctl.productQty.toString()]);
+
+                if (ctl.calendarDiscount != Decimal.zero) {
+                  subtitle +=
+                      " (${LocaleKeys.discount.trArgs([ctl.calendarDiscount.toString()])}:${ctl.calendarDiscount}%)";
+                }
                 return ListTile(
                   title: Text(
                     "${LocaleKeys.total.tr}: \$${DecUtil.formatAmount(ctl.totalAmount)}",
@@ -78,7 +106,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
                     ),
                   ),
                   subtitle: Text(
-                    LocaleKeys.totalPiece.trArgs([ctl.productQty.toString()]),
+                    subtitle,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -148,91 +176,73 @@ class ProductDetailView extends GetView<ProductDetailController> {
         ],
       ),
       // 产品详细信息区域
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          // 产品基本信息区域
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // 产品名称
-                      SelectableText(
-                        ctl.product?.mDesc1 ?? "",
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                          color: AppColors.kTextMain,
-                          letterSpacing: 0.3,
-                          height: 1.3,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 产品基本信息区域
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 产品名称
+                        SelectableText(
+                          ctl.product?.mDesc1 ?? "",
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.kTextMain,
+                            letterSpacing: 0.3,
+                            height: 1.3,
+                          ),
+                          contextMenuBuilder: (context, editableTextState) {
+                            return AdaptiveTextSelectionToolbar.editableText(editableTextState: editableTextState);
+                          },
                         ),
-                        contextMenuBuilder: (context, editableTextState) {
-                          return AdaptiveTextSelectionToolbar.editableText(editableTextState: editableTextState);
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      // 价格信息
-                      Text(
-                        '\$${DecUtil.formatAmount(ctl.productPrice)}',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.kPrice,
-                          letterSpacing: 0.5,
+                        const SizedBox(height: 8),
+                        // 价格信息
+                        Text(
+                          '\$${DecUtil.formatAmount(ctl.productPrice)}',
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                            color: AppColors.kPrice,
+                            letterSpacing: 0.5,
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                // 商品数量选择器
-                CartQuantityStepper(
-                  onChanged: (int value) {
-                    ctl.productQty = value;
-                    ctl.changeTotal();
-                  },
-                ),
-              ],
-            ),
-          ),
-
-          // 分隔线
-          const Divider(height: 1, thickness: 1, color: AppColors.kLine),
-
-          if (productRemarksList.isNotEmpty)
-            // 备注
-            _buildProductRemarks(context, ctl),
-          // 分隔线
-          const Divider(height: 1, thickness: 1, color: Color(0xFFF1F5F9)),
-
-          // 其他信息区域（可根据需要添加）
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '规格信息',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Text('重量:', style: TextStyle(fontSize: 14, color: Colors.grey[500])),
-                    const SizedBox(width: 8),
-                    Text(
-                      '500g', // 这里可以替换为实际重量
-                      style: TextStyle(fontSize: 14, color: Color(0xFF334155)),
+                      ],
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  // 商品数量选择器
+                  CartQuantityStepper(
+                    onChanged: (int value) {
+                      ctl.productQty = value;
+                      ctl.changeTotal();
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+
+            // 分隔线
+            const Divider(height: 1, thickness: 1, color: AppColors.kLine),
+
+            if (productRemarksList.isNotEmpty)
+              // 备注
+              _buildProductRemarks(context, ctl),
+            if (ctl.extraInfo.isNotEmpty)
+              // 分隔线
+              const Divider(height: 1, thickness: 1, color: Color(0xFFF1F5F9)),
+            if (ctl.extraInfo.isNotEmpty)
+              // 套餐视图
+              _buildSetMealView(context, ctl),
+          ],
+        ),
       ),
     );
   }
@@ -302,17 +312,121 @@ class ProductDetailView extends GetView<ProductDetailController> {
     );
   }
 
-  /// ✅ 商品图片 - 智能适配
+  /// 套餐视图
+  Widget _buildSetMealView(BuildContext context, ProductDetailController ctl) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: FormBuilder(
+        key: ctl.formKey,
+        child: ExpansionTileGroup(
+          toggleType: ToggleType.expandOnlyCurrent,
+          spaceBetweenItem: 8,
+          onItemChanged: (index, isExpanded) {},
+          children: ctl.extraInfo.asMap().entries.map((entry) {
+            final index = entry.key;
+            final e = entry.value;
+            // 套餐限制
+            final setMealLimit = e.setMealLimit;
+
+            // 套餐最大选择数量
+            final tempMax = setMealLimit?.limitMax ?? 0;
+            final max = tempMax > 0 ? tempMax : 1;
+            // 强制选择
+            final foreSelect = setMealLimit?.obligatory ?? 0;
+            // 套餐数据
+            final setMealData = setMealLimit?.setMealData ?? [];
+            // 套餐组标题
+            String msgTitle = "";
+            if (max > 1) {
+              if (foreSelect == 1) {
+                msgTitle = LocaleKeys.requireItemsParam.trArgs([max.toString()]);
+              } else {
+                msgTitle = LocaleKeys.selectUpToItemsParam.trArgs([max.toString()]);
+              }
+            }
+
+            return ExpansionTileOutlined(
+              initiallyExpanded: index == 0,
+              border: BoxBorder.all(color: Colors.grey.withAlpha(60)),
+              title: RichText(
+                text: TextSpan(
+                  children: <InlineSpan>[
+                    TextSpan(
+                      text: Get.locale.toString() == "en_US" ? setMealLimit?.enus ?? "" : setMealLimit?.zhtw ?? "",
+                      style: TextStyle(color: AppColors.kTextMain, fontSize: 16, fontWeight: FontWeight.w600),
+                    ),
+                    if (msgTitle.isNotEmpty)
+                      TextSpan(
+                        text: "  ($msgTitle)",
+                        style: TextStyle(color: AppColors.kRequire, fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                  ],
+                ),
+              ),
+              children: [
+                FormBuilderField<List<String>>(
+                  name: 'setMealRemark_$index',
+                  initialValue: controller.selectSetMeal,
+                  onChanged: (List<String>? values) {
+                    final currentValues = values ?? [];
+                    if (currentValues.isEmpty) {
+                      CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs(["1"]));
+                      return;
+                    }
+                    if (foreSelect == 1 && currentValues.length != max) {
+                      CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs([max.toString()]));
+                      return;
+                    }
+                  },
+                  builder: (field) {
+                    final selectedValues = field.value ?? [];
+                    return MultiSelectCheckList(
+                      maxSelectableCount: max,
+                      onMaximumSelected: (selectedItems, selectedItem) {
+                        CustomDialog.errorMessages(
+                          LocaleKeys.selectUpToItemsParam.trArgs([selectedItems.length.toString()]),
+                        );
+                      },
+                      items: setMealData
+                          .map(
+                            (e) => CheckListCard<String>(
+                              enabled: e.soldOut == 0,
+                              value: e.mProductCode ?? "",
+                              title: Text(e.mName ?? ""),
+                              selected: selectedValues.contains(e.mProductCode ?? ""),
+                              selectedColor: AppColors.kPrimary,
+                              checkColor: Colors.white,
+                              checkBoxBorderSide: BorderSide(color: Colors.grey, width: 2.0),
+                            ),
+                          )
+                          .toList(),
+                      onChange: (allSelectedItems, selectedItem) {
+                        logger.f([allSelectedItems, selectedItem]);
+                        field.didChange(allSelectedItems);
+                        if (allSelectedItems.isEmpty) {
+                          ctl.changeSelectSetMeal(item: selectedItem, isAdd: false);
+                        } else {
+                          if (selectedValues.contains(selectedItem)) {
+                            ctl.changeSelectSetMeal(item: selectedItem, isAdd: false);
+                          } else {
+                            ctl.changeSelectSetMeal(item: selectedItem, isAdd: true);
+                          }
+                        }
+                      },
+                    );
+                  },
+                ),
+              ],
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  /// ✅ 商品图片
   Widget _buildProductImageView(String imagePath) {
-    if (imagePath.isEmpty || !imagePath.startsWith('http')) {
-      return Container(
-        color: const Color(0xFFF5F7FA),
-        alignment: Alignment.center,
-        child: Image.asset("assets/notfound.png", width: 80, fit: BoxFit.contain),
-      );
-    }
     ValueNotifier<bool> isImageLoaded = ValueNotifier<bool>(false);
-    ValueNotifier<BoxFit> imageFit = ValueNotifier<BoxFit>(BoxFit.cover);
 
     return ValueListenableBuilder<bool>(
       valueListenable: isImageLoaded,
@@ -330,71 +444,36 @@ class ProductDetailView extends GetView<ProductDetailController> {
               );
             }
           },
-          child: CachedNetworkImage(
-            imageUrl: imagePath.isNotEmpty ? "$imagePath?ts=${DateTime.now().millisecondsSinceEpoch}" : "",
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-            placeholder: (_, _) => Skeletonizer(
-              enabled: true,
-              effect: const ShimmerEffect(
-                baseColor: Color(0xFFE0E0E0),
-                highlightColor: Color(0xFFF5F5F5),
-                duration: Duration(milliseconds: 1200),
-              ),
-              child: Container(color: const Color(0xFFF0F0F0), width: 100, height: 100),
-            ),
-            imageBuilder: (context, imageProvider) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                isImageLoaded.value = true;
-                // 智能判断图片适配方式
-                _determineImageFit(imageProvider, imageFit);
-              });
-
-              return ValueListenableBuilder<BoxFit>(
-                valueListenable: imageFit,
-                builder: (context, fit, child) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: fit == BoxFit.contain ? const Color(0xFFF8FAFC) : Colors.transparent,
+          child: imagePath.isEmpty
+              ? Image.asset("assets/notfound.png")
+              : CachedNetworkImage(
+                  imageUrl: imagePath.isNotEmpty ? "$imagePath?ts=${DateTime.now().millisecondsSinceEpoch}" : "",
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: double.infinity,
+                  placeholder: (_, _) => Skeletonizer(
+                    enabled: true,
+                    effect: const ShimmerEffect(
+                      baseColor: Color(0xFFE0E0E0),
+                      highlightColor: Color(0xFFF5F5F5),
+                      duration: Duration(milliseconds: 1200),
                     ),
-                    child: Image(image: imageProvider, fit: fit, width: double.infinity, height: double.infinity),
-                  );
-                },
-              );
-            },
-            errorWidget: (_, _, _) => Container(
-              color: const Color(0xFFF5F7FA),
-              alignment: Alignment.center,
-              child: Image.asset("assets/notfound.png", width: 80),
-            ),
-          ),
+                    child: Container(color: const Color(0xFFF0F0F0), width: 100, height: 100),
+                  ),
+                  imageBuilder: (context, imageProvider) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      isImageLoaded.value = true;
+                    });
+                    return Image(image: imageProvider, fit: BoxFit.cover);
+                  },
+                  errorWidget: (_, _, _) => Container(
+                    color: const Color(0xFFF5F7FA),
+                    alignment: Alignment.center,
+                    child: Image.asset("assets/notfound.png", width: 80),
+                  ),
+                ),
         );
       },
     );
-  }
-
-  /// 智能判断图片适配方式
-  void _determineImageFit(ImageProvider imageProvider, ValueNotifier<BoxFit> imageFit) {
-    final ImageStream stream = imageProvider.resolve(const ImageConfiguration());
-    late ImageStreamListener listener;
-
-    listener = ImageStreamListener((ImageInfo info, bool synchronousCall) {
-      final image = info.image;
-      final double imageAspectRatio = image.width / image.height;
-
-      // 更宽松的判断条件，优先使用cover来填充容器
-      if (imageAspectRatio >= 0.5 && imageAspectRatio <= 2.0) {
-        // 大部分正常比例的图片都使用cover，确保填充效果
-        imageFit.value = BoxFit.cover;
-      } else {
-        // 只有极端比例的图片才使用contain
-        imageFit.value = BoxFit.contain;
-      }
-
-      stream.removeListener(listener);
-    });
-
-    stream.addListener(listener);
   }
 }
