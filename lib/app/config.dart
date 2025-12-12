@@ -10,8 +10,8 @@ class Config {
   static String calendarDiscount = 'calendarDiscount'; //日历折扣
   static String categoryTreeProduct = 'categoryTreeProduct'; //分类树产品
   static String productRemarks = 'productRemarks'; //产品备注
-  static String productSetMeal = 'productSetMeal'; //产品套餐
-  static String productSetMealLimit = 'productSetMealLimit'; //套餐限制
+  //static String productSetMeal = 'productSetMeal'; //产品套餐
+  // static String productSetMealLimit = 'productSetMealLimit'; //套餐限制
   static String companyInfo = 'companyInfo'; //公司信息
 
   /// API基础地址
@@ -21,4 +21,6 @@ class Config {
   static String login = "/Login/login";
   // 获取数据列表
   static String getDataList = "/Home/getDataList";
+  // 获取单个单品额外信息
+  static String getSingleProductExtraInfo = "/Home/productExtraInfo";
 }
