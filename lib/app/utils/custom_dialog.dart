@@ -2,13 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 class CustomDialog {
-  static Future<void> successMessages(String msg) async {
+  static Future<void> successMessages(String msg, {int displayTime = 3}) async {
     await dismissDialog();
     await SmartDialog.showNotify(
       msg: msg,
       notifyType: NotifyType.success,
       clickMaskDismiss: false,
       animationType: SmartAnimationType.fade,
+      displayTime: Duration(seconds: displayTime),
       builder: (context) {
         return Container(
           padding: const EdgeInsets.all(16),
