@@ -4,10 +4,12 @@
 
 import 'package:hive_ce/hive.dart';
 import 'package:kiosk_plus/app/model/api_data_model/data_result_model.dart';
+import 'package:kiosk_plus/app/model/cart/cart_model.dart';
 import 'package:kiosk_plus/app/model/login/login_data_model.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
+    registerAdapter(CartModelAdapter());
     registerAdapter(CategoryTreeProductAdapter());
     registerAdapter(CompanyInfoAdapter());
     registerAdapter(DataResultModelAdapter());
@@ -15,11 +17,13 @@ extension HiveRegistrar on HiveInterface {
     registerAdapter(LoginDataModelAdapter());
     registerAdapter(ProductAdapter());
     registerAdapter(ProductRemarkAdapter());
+    registerAdapter(SetMealListAdapter());
   }
 }
 
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
+    registerAdapter(CartModelAdapter());
     registerAdapter(CategoryTreeProductAdapter());
     registerAdapter(CompanyInfoAdapter());
     registerAdapter(DataResultModelAdapter());
@@ -27,5 +31,6 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
     registerAdapter(LoginDataModelAdapter());
     registerAdapter(ProductAdapter());
     registerAdapter(ProductRemarkAdapter());
+    registerAdapter(SetMealListAdapter());
   }
 }
