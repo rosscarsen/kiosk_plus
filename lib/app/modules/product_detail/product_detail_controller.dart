@@ -1,20 +1,26 @@
 import 'package:decimal/decimal.dart';
+import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:get/get.dart';
 import 'package:hive_ce/hive.dart';
 
 import '../../config.dart';
 import '../../model/api_data_model/data_result_model.dart';
 import '../../model/api_data_model/single_product_extra_info_model.dart';
+import '../../model/cart/cart_model.dart';
 import '../../service/dio_api_client.dart';
+import '../../translations/locale_keys.dart' show LocaleKeys;
+import '../../utils/custom_dialog.dart';
 import '../../utils/dec_calc.dart';
 import '../../utils/logger.dart';
 
 class ProductDetailController extends GetxController {
   final formKey = GlobalKey<FormBuilderState>();
-
+  final setMealKey = GlobalKey<State>();
+  late final ExpansionGroupController groupController;
+  final ScrollController scrollController = ScrollController();
   final apiClient = ApiClient();
   final box = IsolatedHive.box(Config.kioskHiveBox);
   bool isDataReady = false;
@@ -71,6 +77,8 @@ class ProductDetailController extends GetxController {
     selectRemarks.clear();
     extraInfo.clear();
     selectSetMeal.clear();
+    groupController.dispose();
+    scrollController.dispose();
     super.onClose();
   }
 
@@ -82,8 +90,9 @@ class ProductDetailController extends GetxController {
     isDataReady = false;
     product = Get.arguments as Product?;
     final productID = product?.tProductId.toString().trim() ?? "";
-    //初始日历折扣
+    // 初始日历折扣
     calendarDiscount = DecUtil.from(await box.get(Config.calendarDiscount) ?? "0");
+    // 获取商品额外信息(食品备注與套餐)
     if (productID.isNotEmpty) {
       final apiResponse = await apiClient.get(
         Config.getSingleProductExtraInfo,
@@ -130,9 +139,11 @@ class ProductDetailController extends GetxController {
       }
       selectSetMeal.addAll(defaultSelected);
     }
+    // 初始化展开控制器
+    groupController = ExpansionGroupController(length: extraInfo.length, toggleType: ToggleType.expandOnlyCurrent);
     changeTotal();
-    update(["body"]);
     isDataReady = true;
+    update(["body"]);
   }
 
   /// 获取对应的所有食品备注
@@ -232,5 +243,115 @@ class ProductDetailController extends GetxController {
     // ✅ 最终套餐金额 = 套餐金额 * 商品数量
     final Decimal lastSetMealAmount = DecUtil.mul(selectedSetMealAmount, productQty);
     return lastSetMealAmount;
+  }
+
+  /// 滚动到套餐列表
+  void scrollToSetMeal() {
+    final context = setMealKey.currentContext;
+    if (context == null) return;
+
+    final renderObject = context.findRenderObject();
+    if (renderObject == null) return;
+
+    final viewport = RenderAbstractViewport.of(renderObject);
+
+    final offset = viewport.getOffsetToReveal(renderObject, 0.0).offset;
+
+    scrollController.animateTo(offset, duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+  }
+
+  /// 检测套餐
+  bool checkSetMeal() {
+    // 有套餐，才检测
+    if (setMealList.isNotEmpty) {
+      if (selectSetMeal.isEmpty) {
+        scrollToSetMeal();
+        groupController.handleBehaviors(0, true, false);
+        CustomDialog.errorMessages(LocaleKeys.pleaseSelectSetMeal.tr);
+        return false;
+      }
+      for (var item in extraInfo.asMap().entries) {
+        final index = item.key;
+        final setMealLimit = item.value.setMealLimit;
+        final title = Get.locale.toString() == "en_US" ? setMealLimit?.enus ?? "" : setMealLimit?.zhtw ?? "";
+        // 套餐最大选择数量
+        final tempMax = setMealLimit?.limitMax ?? 0;
+        final max = tempMax > 0 ? tempMax : 1;
+        // 强制选择
+        final foreSelect = setMealLimit?.obligatory ?? 0;
+        // // 套餐数据
+        final setMealData = setMealLimit?.setMealData ?? [];
+        final itemSelectedList = selectSetMeal.where((e) => setMealData.any((item) => item.mProductCode == e)).toList();
+        if (foreSelect == 1) {
+          if (itemSelectedList.isEmpty || itemSelectedList.length < max) {
+            scrollToSetMeal();
+            groupController.handleBehaviors(index, true, false);
+            CustomDialog.errorMessages("$title${LocaleKeys.requireItemsParam.trArgs([max.toString()])}");
+            return false;
+          }
+        } else {
+          if (itemSelectedList.isEmpty) {
+            scrollToSetMeal();
+            groupController.handleBehaviors(index, true, false);
+            CustomDialog.errorMessages("$title${LocaleKeys.requireItemsParam.trArgs(["1"])}");
+            return false;
+          }
+        }
+      }
+    }
+    return true;
+  }
+
+  /// 添加到购物车
+  Future<void> addToCart() async {
+    try {
+      final Map<String, dynamic> singleCartInfo = {};
+      if (product == null) {
+        CustomDialog.errorMessages(LocaleKeys.paramFailed.trArgs([LocaleKeys.addToCart.tr]));
+        return;
+      }
+      singleCartInfo.addAll({"product": product?.copyWith(qty: productQty).toJson()});
+
+      final formData = formKey.currentState?.value;
+
+      if (formData != null) {
+        //备注
+        final remarkCodes = formData["remark"] as List? ?? [];
+        final List<ProductRemark> remark = itemProductRemarks.where((e) => remarkCodes.contains(e.mDetail)).toList();
+
+        singleCartInfo.addAll({"remarkList": remark.map((e) => e.toJson()).toList()});
+        //套餐
+        final Set<String> selectSetMealCodes = <String>{
+          for (final e in formData.entries)
+            if (e.key.startsWith('setMeal_')) ...?e.value,
+        };
+        final selectAllSetMealList = setMealList
+            .where((e) => selectSetMealCodes.contains(e.mProductCode))
+            .map((e) => e.toJson())
+            .toList();
+        singleCartInfo.addAll({"setMealList": selectAllSetMealList});
+      }
+      final cartModel = CartModel.fromJson(singleCartInfo);
+
+      final boxCartList = (await box.get(Config.shoppingCart) as List?)?.cast<CartModel>();
+
+      if (boxCartList == null) {
+        await box.put(Config.shoppingCart, [cartModel]);
+      } else {
+        final index = boxCartList.indexWhere((e) => e.product?.mCode == cartModel.product?.mCode);
+        if (index == -1) {
+          boxCartList.add(cartModel);
+        } else {
+          boxCartList[index] = cartModel;
+        }
+        await box.put(Config.shoppingCart, boxCartList);
+      }
+      CustomDialog.successMessages(LocaleKeys.paramSuccess.trArgs([LocaleKeys.addToCart.tr]));
+      Future.delayed(const Duration(seconds: 1), () {
+        Get.back();
+      });
+    } catch (e) {
+      CustomDialog.errorMessages(LocaleKeys.paramFailed.trArgs([LocaleKeys.addToCart.tr]));
+    }
   }
 }

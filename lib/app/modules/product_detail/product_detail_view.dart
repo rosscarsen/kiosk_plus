@@ -4,9 +4,10 @@ import 'package:easy_image_viewer/easy_image_viewer.dart';
 import 'package:expansion_tile_group/expansion_tile_group.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
 import 'package:get/get.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:flutter_multi_select_items/flutter_multi_select_items.dart';
+
 import '../../translations/locale_keys.dart';
 import '../../utils/constants.dart';
 import '../../utils/custom_dialog.dart';
@@ -112,11 +113,11 @@ class ProductDetailView extends GetView<ProductDetailController> {
                     style: ElevatedButton.styleFrom(backgroundColor: AppColors.kPrice, foregroundColor: Colors.white),
                     child: Text(LocaleKeys.addToCart.tr),
                     onPressed: () {
-                      if (ctl.formKey.currentState?.validate() ?? false) {
-                        logger.f(ctl.formKey.currentState?.value);
+                      final bool validate = ctl.checkSetMeal();
+                      if (validate && (ctl.formKey.currentState?.saveAndValidate() ?? false)) {
+                        ctl.addToCart();
                       } else {
-                        // 验证失败，处理错误
-                        logger.e("Form validation failed");
+                        logger.f("验证失败");
                       }
                     },
                   ),
@@ -160,7 +161,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
           ),
         ];
       },
-      body: _buildDetail(context, ctl),
+      body: FormBuilder(key: ctl.formKey, child: _buildDetail(context, ctl)),
     );
   }
 
@@ -178,57 +179,13 @@ class ProductDetailView extends GetView<ProductDetailController> {
       ),
       // 产品详细信息区域
       child: SingleChildScrollView(
+        controller: ctl.scrollController,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 产品基本信息区域
-            Container(
-              padding: const EdgeInsets.all(20),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 产品名称
-                        SelectableText(
-                          ctl.product?.mDesc1 ?? "",
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.kTextMain,
-                            letterSpacing: 0.3,
-                            height: 1.3,
-                          ),
-                          contextMenuBuilder: (context, editableTextState) {
-                            return AdaptiveTextSelectionToolbar.editableText(editableTextState: editableTextState);
-                          },
-                        ),
-                        const SizedBox(height: 8),
-                        // 价格信息
-                        Text(
-                          '\$${DecUtil.formatAmount(ctl.productPrice)}',
-                          style: const TextStyle(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w800,
-                            color: AppColors.kPrice,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  // 商品数量选择器
-                  CartQuantityStepper(
-                    onChanged: (int value) {
-                      ctl.productQty = value;
-                      ctl.changeTotal();
-                    },
-                  ),
-                ],
-              ),
-            ),
+            _buildBaseInfo(context, ctl),
 
             // 分隔线
             const Divider(height: 1, thickness: 1, color: AppColors.kLine),
@@ -244,6 +201,56 @@ class ProductDetailView extends GetView<ProductDetailController> {
               _buildSetMealView(context, ctl),
           ],
         ),
+      ),
+    );
+  }
+
+  /// 基本信息
+  Widget _buildBaseInfo(BuildContext context, ProductDetailController ctl) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 产品名称
+                SelectableText(
+                  ctl.product?.mDesc1 ?? "",
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.kTextMain,
+                    letterSpacing: 0.3,
+                    height: 1.3,
+                  ),
+                  contextMenuBuilder: (context, editableTextState) {
+                    return AdaptiveTextSelectionToolbar.editableText(editableTextState: editableTextState);
+                  },
+                ),
+                const SizedBox(height: 8),
+                // 价格信息
+                Text(
+                  '\$${DecUtil.formatAmount(ctl.productPrice)}',
+                  style: const TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.kPrice,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // 商品数量选择器
+          CartQuantityStepper(
+            onChanged: (int value) {
+              ctl.productQty = value;
+              ctl.changeTotal();
+            },
+          ),
+        ],
       ),
     );
   }
@@ -316,79 +323,81 @@ class ProductDetailView extends GetView<ProductDetailController> {
   /// 套餐视图
   Widget _buildSetMealView(BuildContext context, ProductDetailController ctl) {
     return Padding(
+      key: ctl.setMealKey,
       padding: const EdgeInsets.all(12),
-      child: FormBuilder(
-        key: ctl.formKey,
-        child: ExpansionTileGroup(
-          toggleType: ToggleType.expandOnlyCurrent,
-          spaceBetweenItem: 8,
-          onItemChanged: (index, isExpanded) {},
-          children: ctl.extraInfo.asMap().entries.map((entry) {
-            final index = entry.key;
-            final e = entry.value;
-            // 套餐限制
-            final setMealLimit = e.setMealLimit;
+      child: Column(
+        spacing: 8.0,
+        children: ctl.extraInfo.asMap().entries.map((entry) {
+          final index = entry.key;
+          final e = entry.value;
+          // 套餐限制
+          final setMealLimit = e.setMealLimit;
 
-            // 套餐最大选择数量
-            final tempMax = setMealLimit?.limitMax ?? 0;
-            final max = tempMax > 0 ? tempMax : 1;
-            // 强制选择
-            final foreSelect = setMealLimit?.obligatory ?? 0;
-            // 套餐数据
-            final setMealData = setMealLimit?.setMealData ?? [];
-            // 套餐组标题
-            String msgTitle = "";
-            if (max > 1) {
-              if (foreSelect == 1) {
-                msgTitle = LocaleKeys.requireItemsParam.trArgs([max.toString()]);
-              } else {
-                msgTitle = LocaleKeys.selectUpToItemsParam.trArgs([max.toString()]);
-              }
+          // 套餐最大选择数量
+          final tempMax = setMealLimit?.limitMax ?? 0;
+          final max = tempMax > 0 ? tempMax : 1;
+          // 强制选择
+          final foreSelect = setMealLimit?.obligatory ?? 0;
+          // 套餐数据
+          final setMealData = setMealLimit?.setMealData ?? [];
+          // 套餐组标题
+          String msgTitle = "";
+          if (max > 1) {
+            if (foreSelect == 1) {
+              msgTitle = LocaleKeys.requireItemsParam.trArgs([max.toString()]);
+            } else {
+              msgTitle = LocaleKeys.selectUpToItemsParam.trArgs([max.toString()]);
             }
+          }
 
-            return ExpansionTileOutlined(
-              initiallyExpanded: index == 0,
-              border: BoxBorder.all(color: Colors.grey.withAlpha(60)),
-              title: RichText(
-                text: TextSpan(
-                  children: <InlineSpan>[
+          return ExpansionTileOutlined(
+            controller: ctl.groupController,
+            index: index,
+            initiallyExpanded: index == 0,
+            border: BoxBorder.all(color: Colors.grey.withAlpha(60)),
+            title: RichText(
+              text: TextSpan(
+                children: <InlineSpan>[
+                  TextSpan(
+                    text: Get.locale.toString() == "en_US" ? setMealLimit?.enus ?? "" : setMealLimit?.zhtw ?? "",
+                    style: TextStyle(color: AppColors.kTextMain, fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  if (msgTitle.isNotEmpty)
                     TextSpan(
-                      text: Get.locale.toString() == "en_US" ? setMealLimit?.enus ?? "" : setMealLimit?.zhtw ?? "",
-                      style: TextStyle(color: AppColors.kTextMain, fontSize: 16, fontWeight: FontWeight.w600),
+                      text: "  ($msgTitle)",
+                      style: TextStyle(color: AppColors.kRequire, fontSize: 16, fontWeight: FontWeight.w600),
                     ),
-                    if (msgTitle.isNotEmpty)
-                      TextSpan(
-                        text: "  ($msgTitle)",
-                        style: TextStyle(color: AppColors.kRequire, fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                  ],
-                ),
+                ],
               ),
-              children: [
-                FormBuilderField<List<String>>(
-                  name: 'setMealRemark_$index',
-                  initialValue: controller.selectSetMeal,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return LocaleKeys.requireItemsParam.trArgs(["1"]);
-                    }
-                    return null;
-                  },
+            ),
+            children: [
+              FormBuilderField<List<String>>(
+                name: 'setMeal_$index',
+                initialValue: controller.selectSetMeal,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return LocaleKeys.requireItemsParam.trArgs(["1"]);
+                  }
+                  return null;
+                },
 
-                  onChanged: (List<String>? values) {
-                    final currentValues = values ?? [];
-                    if (currentValues.isEmpty) {
-                      CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs(["1"]));
-                      return;
-                    }
-                    if (foreSelect == 1 && currentValues.length != max) {
-                      CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs([max.toString()]));
-                      return;
-                    }
-                  },
-                  builder: (field) {
-                    final selectedValues = field.value ?? [];
-                    return MultiSelectCheckList(
+                onChanged: (List<String>? values) {
+                  final currentValues = values ?? [];
+                  if (currentValues.isEmpty) {
+                    CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs(["1"]));
+                    return;
+                  }
+                  if (foreSelect == 1 && currentValues.length != max) {
+                    CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs([max.toString()]));
+                    return;
+                  }
+                },
+                builder: (field) {
+                  final selectedValues = field.value ?? [];
+                  return InputDecorator(
+                    decoration: InputDecoration(border: InputBorder.none, errorText: field.errorText),
+                    child: MultiSelectCheckList(
                       maxSelectableCount: max,
                       onMaximumSelected: (selectedItems, selectedItem) {
                         CustomDialog.errorMessages(
@@ -400,7 +409,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
                             (e) => CheckListCard<String>(
                               enabled: e.soldOut == 0,
                               value: e.mProductCode ?? "",
-                              title: Text(e.mName ?? ""),
+                              title: Text(e.mProductCode ?? ""),
                               selected: selectedValues.contains(e.mProductCode ?? ""),
                               selectedColor: AppColors.kPrimary,
                               checkColor: Colors.white,
@@ -420,13 +429,13 @@ class ProductDetailView extends GetView<ProductDetailController> {
                           }
                         }
                       },
-                    );
-                  },
-                ),
-              ],
-            );
-          }).toList(),
-        ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          );
+        }).toList(),
       ),
     );
   }
