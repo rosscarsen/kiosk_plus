@@ -140,6 +140,8 @@ class Product {
   final String? productRemarks;
   @HiveField(12)
   final String? imagesPath;
+  @HiveField(13, defaultValue: 1)
+  final int? qty;
 
   Product({
     this.mCode,
@@ -154,8 +156,37 @@ class Product {
     this.mSoldOut,
     this.productRemarks,
     this.imagesPath,
+    this.qty,
   });
-
+  Product copyWith({
+    String? mCode,
+    String? mDesc1,
+    String? mDesc2,
+    String? mRemarks,
+    String? mCategory1,
+    String? mCategory2,
+    dynamic mCategory3,
+    int? tProductId,
+    String? mPrice,
+    int? mSoldOut,
+    String? productRemarks,
+    String? imagesPath,
+    int? qty,
+  }) => Product(
+    mCode: mCode ?? this.mCode,
+    mDesc1: mDesc1 ?? this.mDesc1,
+    mDesc2: mDesc2 ?? this.mDesc2,
+    mRemarks: mRemarks ?? this.mRemarks,
+    mCategory1: mCategory1 ?? this.mCategory1,
+    mCategory2: mCategory2 ?? this.mCategory2,
+    mCategory3: mCategory3 ?? this.mCategory3,
+    tProductId: tProductId ?? this.tProductId,
+    mPrice: mPrice ?? this.mPrice,
+    mSoldOut: mSoldOut ?? this.mSoldOut,
+    productRemarks: productRemarks ?? this.productRemarks,
+    imagesPath: imagesPath ?? this.imagesPath,
+    qty: qty ?? this.qty,
+  );
   factory Product.fromJson(Map<String, dynamic> json) => Product(
     mCode: json["mCode"],
     mDesc1: json["mDesc1"],
@@ -169,6 +200,7 @@ class Product {
     mSoldOut: json["mSoldOut"],
     productRemarks: json["productRemarks"],
     imagesPath: json["imagesPath"],
+    qty: json["qty"],
   );
 
   Map<String, dynamic> toJson() => {
@@ -184,6 +216,7 @@ class Product {
     "mSoldOut": mSoldOut,
     "productRemarks": productRemarks,
     "imagesPath": imagesPath,
+    "qty": qty,
   };
 }
 

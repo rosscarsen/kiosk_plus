@@ -161,13 +161,14 @@ class ProductAdapter extends TypeAdapter<Product> {
       mSoldOut: (fields[10] as num?)?.toInt(),
       productRemarks: fields[11] as String?,
       imagesPath: fields[12] as String?,
+      qty: fields[13] == null ? 1 : (fields[13] as num?)?.toInt(),
     );
   }
 
   @override
   void write(BinaryWriter writer, Product obj) {
     writer
-      ..writeByte(12)
+      ..writeByte(13)
       ..writeByte(1)
       ..write(obj.mCode)
       ..writeByte(2)
@@ -191,7 +192,9 @@ class ProductAdapter extends TypeAdapter<Product> {
       ..writeByte(11)
       ..write(obj.productRemarks)
       ..writeByte(12)
-      ..write(obj.imagesPath);
+      ..write(obj.imagesPath)
+      ..writeByte(13)
+      ..write(obj.qty);
   }
 
   @override
