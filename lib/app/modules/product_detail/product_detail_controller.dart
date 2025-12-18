@@ -15,6 +15,7 @@ import '../../translations/locale_keys.dart' show LocaleKeys;
 import '../../utils/custom_dialog.dart';
 import '../../utils/dec_calc.dart';
 import '../../utils/logger.dart';
+import '../hall/hall_controller.dart';
 
 class ProductDetailController extends GetxController {
   final formKey = GlobalKey<FormBuilderState>();
@@ -218,13 +219,11 @@ class ProductDetailController extends GetxController {
   }
 
   /// 修改选中套餐
-  void changeSelectSetMeal({required String item, required bool isAdd}) {
-    if (isAdd) {
-      selectSetMeal.add(item);
-    } else {
-      selectSetMeal.remove(item);
-    }
-    selectSetMeal = List.from(selectSetMeal.toSet());
+  void changeSelectSetMeal({required List<String> itemAllSelectedItems, required List<String> itemAllItems}) {
+    // 从全部选中的套餐中移除列表下对应的套餐
+    selectSetMeal.removeWhere((element) => itemAllItems.contains(element));
+    // 添加选中的套餐到全部选中的套餐中
+    selectSetMeal.addAll(itemAllSelectedItems);
     changeTotal();
   }
 
@@ -347,7 +346,9 @@ class ProductDetailController extends GetxController {
         await box.put(Config.shoppingCart, boxCartList);
       }
       CustomDialog.successMessages(LocaleKeys.paramSuccess.trArgs([LocaleKeys.addToCart.tr]));
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(Duration.zero, () {
+        final hallController = Get.find<HallController>();
+        hallController.calculateCartAmount();
         Get.back();
       });
     } catch (e) {
