@@ -10,6 +10,8 @@ import '../modules/home/home_binding.dart';
 import '../modules/home/home_view.dart';
 import '../modules/login/login_binding.dart';
 import '../modules/login/login_view.dart';
+import '../modules/privacy/privacy_binding.dart';
+import '../modules/privacy/privacy_view.dart';
 import '../modules/product_detail/product_detail_binding.dart';
 import '../modules/product_detail/product_detail_view.dart';
 
@@ -48,6 +50,11 @@ class AppPages {
       name: _Paths.CART,
       page: () => const CartView(),
       binding: CartBinding(),
+    ),
+    GetPage(
+      name: _Paths.PRIVACY,
+      page: () => const PrivacyView(),
+      binding: PrivacyBinding(),
     ),
   ];
 }
