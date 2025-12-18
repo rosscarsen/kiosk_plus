@@ -81,4 +81,7 @@ Map<String, String> get enUS => {
   LocaleKeys.requireItemsParam: "Require %s items",
   LocaleKeys.pleaseSelectSetMeal: "Please select set meal",
   LocaleKeys.cart: "Cart",
+  LocaleKeys.acceptAgree: "By placing an order, you agree to our",
+  LocaleKeys.termAndConditions: "Term and Conditions",
+  LocaleKeys.privacy: "Privacy Policy",
 };

@@ -80,4 +80,7 @@ abstract class LocaleKeys {
   static const String requireItemsParam = "requireItemsParam";
   static const String pleaseSelectSetMeal = "pleaseSelectSetMeal";
   static const String cart = "cart";
+  static const String acceptAgree = "acceptAgree";
+  static const String termAndConditions = "termAndConditions";
+  static const String privacy = "privacy";
 }
