@@ -384,6 +384,12 @@ class ProductDetailView extends GetView<ProductDetailController> {
 
                 onChanged: (List<String>? values) {
                   final currentValues = values ?? [];
+                  final itemAllItems = setMealData
+                      .map((e) => e.mProductCode)
+                      .whereType<String>()
+                      .where((e) => e.isNotEmpty)
+                      .toList();
+                  ctl.changeSelectSetMeal(itemAllSelectedItems: currentValues, itemAllItems: itemAllItems);
                   if (currentValues.isEmpty) {
                     CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs(["1"]));
                     return;
@@ -419,15 +425,6 @@ class ProductDetailView extends GetView<ProductDetailController> {
                           .toList(),
                       onChange: (allSelectedItems, selectedItem) {
                         field.didChange(allSelectedItems);
-                        if (allSelectedItems.isEmpty) {
-                          ctl.changeSelectSetMeal(item: selectedItem, isAdd: false);
-                        } else {
-                          if (selectedValues.contains(selectedItem)) {
-                            ctl.changeSelectSetMeal(item: selectedItem, isAdd: false);
-                          } else {
-                            ctl.changeSelectSetMeal(item: selectedItem, isAdd: true);
-                          }
-                        }
                       },
                     ),
                   );
