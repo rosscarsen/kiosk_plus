@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 
 import '../modules/bluetooth_setting_view/bluetooth_setting_view_binding.dart';
 import '../modules/bluetooth_setting_view/bluetooth_setting_view_view.dart';
+import '../modules/cart/cart_binding.dart';
+import '../modules/cart/cart_view.dart';
 import '../modules/hall/hall_binding.dart';
 import '../modules/hall/hall_view.dart';
 import '../modules/home/home_binding.dart';
@@ -41,6 +43,11 @@ class AppPages {
       name: _Paths.PRODUCT_DETAIL,
       page: () => const ProductDetailView(),
       binding: ProductDetailBinding(),
+    ),
+    GetPage(
+      name: _Paths.CART,
+      page: () => const CartView(),
+      binding: CartBinding(),
     ),
   ];
 }
