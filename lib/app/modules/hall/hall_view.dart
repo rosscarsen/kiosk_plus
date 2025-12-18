@@ -42,7 +42,7 @@ class HallView extends GetView<HallController> {
             builder: (ctl) {
               return InkWell(
                 onTap: () {
-                  //跳去购物车详情页
+                  Get.toNamed(Routes.CART);
                 },
                 child: Container(
                   margin: const EdgeInsets.only(right: 12),
