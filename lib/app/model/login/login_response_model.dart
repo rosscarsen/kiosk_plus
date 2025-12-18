@@ -5,7 +5,8 @@
 import 'dart:convert';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:kiosk_plus/app/model/login/login_data_model.dart';
+
+import 'login_data_model.dart';
 
 part 'login_response_model.g.dart';
 
