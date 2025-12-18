@@ -79,4 +79,5 @@ abstract class LocaleKeys {
   static const String selectUpToItemsParam = "selectUpToItemsParam";
   static const String requireItemsParam = "requireItemsParam";
   static const String pleaseSelectSetMeal = "pleaseSelectSetMeal";
+  static const String cart = "cart";
 }

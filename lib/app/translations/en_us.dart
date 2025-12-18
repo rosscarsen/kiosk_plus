@@ -80,4 +80,5 @@ Map<String, String> get enUS => {
   LocaleKeys.selectUpToItemsParam: "Select up to %s items",
   LocaleKeys.requireItemsParam: "Require %s items",
   LocaleKeys.pleaseSelectSetMeal: "Please select set meal",
+  LocaleKeys.cart: "Cart",
 };

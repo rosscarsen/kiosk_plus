@@ -79,5 +79,6 @@ Map<String, String> get zhCN => {
   LocaleKeys.addToCart: "加入购物车",
   LocaleKeys.selectUpToItemsParam: "最多选择%s项",
   LocaleKeys.requireItemsParam: "必须选择%s项",
+  LocaleKeys.cart: "购物车",
   LocaleKeys.pleaseSelectSetMeal: "请选择套餐",
 };
