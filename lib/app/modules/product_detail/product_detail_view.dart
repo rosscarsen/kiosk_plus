@@ -158,6 +158,19 @@ class ProductDetailView extends GetView<ProductDetailController> {
                 ),
               ),
             ),
+            leading: Container(
+              margin: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withAlpha(235),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [BoxShadow(color: Colors.black.withAlpha(40), blurRadius: 6, offset: const Offset(0, 2))],
+              ),
+              child: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.kTextMain),
+                onPressed: () => Get.back(),
+                splashRadius: 24,
+              ),
+            ),
           ),
         ];
       },
@@ -350,87 +363,95 @@ class ProductDetailView extends GetView<ProductDetailController> {
             }
           }
 
-          return ExpansionTileOutlined(
-            controller: ctl.groupController,
-            index: index,
-            initiallyExpanded: index == 0,
-            border: BoxBorder.all(color: Colors.grey.withAlpha(60)),
-            title: RichText(
-              text: TextSpan(
-                children: <InlineSpan>[
-                  TextSpan(
-                    text: Get.locale.toString() == "en_US" ? setMealLimit?.enus ?? "" : setMealLimit?.zhtw ?? "",
-                    style: TextStyle(color: AppColors.kTextMain, fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  if (msgTitle.isNotEmpty)
-                    TextSpan(
-                      text: "  ($msgTitle)",
-                      style: TextStyle(color: AppColors.kRequire, fontSize: 16, fontWeight: FontWeight.w600),
-                    ),
-                ],
-              ),
+          return Card(
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+              side: BorderSide(color: Colors.grey.shade200),
             ),
-            children: [
-              FormBuilderField<List<String>>(
-                name: 'setMeal_$index',
-                initialValue: controller.selectSetMeal,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return LocaleKeys.requireItemsParam.trArgs(["1"]);
-                  }
-                  return null;
-                },
-
-                onChanged: (List<String>? values) {
-                  final currentValues = values ?? [];
-                  final itemAllItems = setMealData
-                      .map((e) => e.mProductCode)
-                      .whereType<String>()
-                      .where((e) => e.isNotEmpty)
-                      .toList();
-                  ctl.changeSelectSetMeal(itemAllSelectedItems: currentValues, itemAllItems: itemAllItems);
-                  if (currentValues.isEmpty) {
-                    CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs(["1"]));
-                    return;
-                  }
-                  if (foreSelect == 1 && currentValues.length != max) {
-                    CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs([max.toString()]));
-                    return;
-                  }
-                },
-                builder: (field) {
-                  final selectedValues = field.value ?? [];
-                  return InputDecorator(
-                    decoration: InputDecoration(border: InputBorder.none, errorText: field.errorText),
-                    child: MultiSelectCheckList(
-                      maxSelectableCount: max,
-                      onMaximumSelected: (selectedItems, selectedItem) {
-                        CustomDialog.errorMessages(
-                          LocaleKeys.selectUpToItemsParam.trArgs([selectedItems.length.toString()]),
-                        );
-                      },
-                      items: setMealData
-                          .map(
-                            (e) => CheckListCard<String>(
-                              enabled: e.soldOut == 0,
-                              value: e.mProductCode ?? "",
-                              title: Text(e.mProductCode ?? ""),
-                              selected: selectedValues.contains(e.mProductCode ?? ""),
-                              selectedColor: AppColors.kPrimary,
-                              checkColor: Colors.white,
-                              checkBoxBorderSide: BorderSide(color: Colors.grey, width: 2.0),
-                            ),
-                          )
-                          .toList(),
-                      onChange: (allSelectedItems, selectedItem) {
-                        field.didChange(allSelectedItems);
-                      },
+            child: ExpansionTileOutlined(
+              controller: ctl.groupController,
+              index: index,
+              initiallyExpanded: index == 0,
+              border: BoxBorder.all(color: Colors.grey.withAlpha(60)),
+              title: RichText(
+                text: TextSpan(
+                  children: <InlineSpan>[
+                    TextSpan(
+                      text: Get.locale.toString() == "en_US" ? setMealLimit?.enus ?? "" : setMealLimit?.zhtw ?? "",
+                      style: TextStyle(color: AppColors.kTextMain, fontSize: 16, fontWeight: FontWeight.w600),
                     ),
-                  );
-                },
+                    if (msgTitle.isNotEmpty)
+                      TextSpan(
+                        text: "  ($msgTitle)",
+                        style: TextStyle(color: AppColors.kRequire, fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                  ],
+                ),
               ),
-            ],
+              children: [
+                FormBuilderField<List<String>>(
+                  name: 'setMeal_$index',
+                  initialValue: controller.selectSetMeal,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return LocaleKeys.requireItemsParam.trArgs(["1"]);
+                    }
+                    return null;
+                  },
+
+                  onChanged: (List<String>? values) {
+                    final currentValues = values ?? [];
+                    final itemAllItems = setMealData
+                        .map((e) => e.mProductCode)
+                        .whereType<String>()
+                        .where((e) => e.isNotEmpty)
+                        .toList();
+                    ctl.changeSelectSetMeal(itemAllSelectedItems: currentValues, itemAllItems: itemAllItems);
+                    if (currentValues.isEmpty) {
+                      CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs(["1"]));
+                      return;
+                    }
+                    if (foreSelect == 1 && currentValues.length != max) {
+                      CustomDialog.errorMessages(LocaleKeys.requireItemsParam.trArgs([max.toString()]));
+                      return;
+                    }
+                  },
+                  builder: (field) {
+                    final selectedValues = field.value ?? [];
+                    return InputDecorator(
+                      decoration: InputDecoration(border: InputBorder.none, errorText: field.errorText),
+                      child: MultiSelectCheckList(
+                        maxSelectableCount: max,
+                        onMaximumSelected: (selectedItems, selectedItem) {
+                          CustomDialog.errorMessages(
+                            LocaleKeys.selectUpToItemsParam.trArgs([selectedItems.length.toString()]),
+                          );
+                        },
+                        items: setMealData
+                            .map(
+                              (e) => CheckListCard<String>(
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                enabled: e.soldOut == 0,
+                                value: e.mProductCode ?? "",
+                                title: Text(e.mProductCode ?? ""),
+                                selected: selectedValues.contains(e.mProductCode ?? ""),
+                                selectedColor: AppColors.kPrimary,
+                                checkColor: Colors.white,
+                                checkBoxBorderSide: BorderSide(color: Colors.grey, width: 2.0),
+                              ),
+                            )
+                            .toList(),
+                        onChange: (allSelectedItems, selectedItem) {
+                          field.didChange(allSelectedItems);
+                        },
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
           );
         }).toList(),
       ),
