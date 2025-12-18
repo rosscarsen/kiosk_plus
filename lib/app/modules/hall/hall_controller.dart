@@ -11,7 +11,6 @@ import '../../service/data_sync_service.dart';
 import '../../service/dio_api_client.dart';
 import '../../translations/locale_keys.dart';
 import '../../utils/dec_calc.dart';
-import '../../utils/logger.dart';
 
 class HallController extends GetxController {
   /// 左側第一大類 PageView 控制器
