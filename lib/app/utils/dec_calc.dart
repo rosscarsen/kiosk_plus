@@ -15,11 +15,16 @@ class DecUtil {
     if (value == null) return Decimal.zero;
     if (value is Decimal) return value;
 
-    try {
+    if (value is num) {
       return Decimal.parse(value.toString());
-    } catch (e) {
-      throw FormatException('无法解析为 Decimal: $value');
     }
+
+    if (value is String) {
+      final normalized = value.replaceAll(',', '');
+      return Decimal.parse(normalized);
+    }
+
+    throw FormatException('无法解析为 Decimal: $value');
   }
 
   /// 加法运算
