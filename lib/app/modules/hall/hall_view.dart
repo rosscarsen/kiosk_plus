@@ -9,6 +9,7 @@ import '../../model/api_data_model/data_result_model.dart';
 import '../../routes/app_pages.dart';
 import '../../translations/locale_keys.dart';
 import '../../utils/constants.dart';
+import '../../utils/dec_calc.dart';
 import '../../utils/logger.dart';
 import '../../widgets/auto_text.dart';
 import 'hall_controller.dart';
@@ -22,8 +23,6 @@ class HallView extends GetView<HallController> {
       extendBody: true,
       appBar: AppBar(
         elevation: 0.5,
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.white,
         centerTitle: true,
         title: GetBuilder<HallController>(
           id: "hall_app_bar",
@@ -38,20 +37,34 @@ class HallView extends GetView<HallController> {
           ),
         ),
         actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 12),
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(color: AppColors.kBg, borderRadius: BorderRadius.circular(24)),
-            child: Row(
-              children: [
-                Badge.count(count: 5, child: const Icon(Icons.shopping_cart, size: 18, color: AppColors.kPrimary)),
-                const SizedBox(width: 6),
-                const Text(
-                  '\$100.00',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.kPrimary),
+          GetBuilder<HallController>(
+            id: "shoppingCart",
+            builder: (ctl) {
+              return InkWell(
+                onTap: () {
+                  //跳去购物车详情页
+                },
+                child: Container(
+                  margin: const EdgeInsets.only(right: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  decoration: BoxDecoration(color: AppColors.kBg, borderRadius: BorderRadius.circular(24)),
+                  child: Row(
+                    spacing: 4.0,
+                    children: [
+                      Badge.count(
+                        count: ctl.cartQuantity,
+                        child: const Icon(Icons.shopping_cart, size: 18, color: AppColors.kPrimary),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        '\$${DecUtil.formatAmount(ctl.cartAmount)}',
+                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.kPrimary),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              );
+            },
           ),
         ],
       ),
