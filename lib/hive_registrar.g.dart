@@ -3,9 +3,10 @@
 // Check in to version control
 
 import 'package:hive_ce/hive.dart';
-import 'package:kiosk_plus/app/model/api_data_model/data_result_model.dart';
-import 'package:kiosk_plus/app/model/cart/cart_model.dart';
-import 'package:kiosk_plus/app/model/login/login_data_model.dart';
+
+import 'app/model/api_data_model/data_result_model.dart';
+import 'app/model/cart/cart_model.dart';
+import 'app/model/login/login_data_model.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
