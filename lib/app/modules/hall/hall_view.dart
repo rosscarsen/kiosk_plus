@@ -115,7 +115,7 @@ class HallView extends GetView<HallController> {
         return ViewTabBarItem(
           index: index,
           transform: ColorsTransform(
-            normalColor: AppColors.kTextSub,
+            normalColor: AppColors.kTextMain,
             highlightColor: AppColors.kPrimary,
             builder: (context, color) {
               final bool selected = color == AppColors.kPrimary;
@@ -235,7 +235,7 @@ class CategoryAndProducts extends StatelessWidget {
             return ViewTabBarItem(
               index: index,
               transform: ColorsTransform(
-                normalColor: AppColors.kTextSub,
+                normalColor: AppColors.kTextMain,
                 highlightColor: AppColors.kPrimary,
                 builder: (context, color) {
                   final bool selected = color == AppColors.kPrimary;
