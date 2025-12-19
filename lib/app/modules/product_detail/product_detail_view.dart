@@ -110,7 +110,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
                     ),
                   ),
                   trailing: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.kPrice, foregroundColor: Colors.white),
+                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.kAddCart, foregroundColor: Colors.white),
                     child: Text(LocaleKeys.addToCart.tr),
                     onPressed: () {
                       final bool validate = ctl.checkSetMeal();
