@@ -27,7 +27,7 @@ class DataSyncService extends GetxService {
   void _startBackgroundJob() {
     _fetchDataSafe();
 
-    _timer = Timer.periodic(const Duration(minutes: 3), (_) {
+    _timer = Timer.periodic(const Duration(minutes: 5), (_) {
       _fetchDataSafe();
     });
   }
