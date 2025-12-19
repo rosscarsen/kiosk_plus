@@ -90,4 +90,6 @@ Map<String, String> zhHK = {
   LocaleKeys.areYouSureDelete: "確定刪除嗎？",
   LocaleKeys.cartIsEmpty: "購物車空的",
   LocaleKeys.goShoppingNow: "現在去購物",
+  LocaleKeys.autoClearCart: "購物車內容為臨時數據，離開當前頁面後將自動清空。",
+  LocaleKeys.leave: "離開",
 };

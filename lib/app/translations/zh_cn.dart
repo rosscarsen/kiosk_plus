@@ -90,4 +90,6 @@ Map<String, String> get zhCN => {
   LocaleKeys.areYouSureDelete: "确定删除吗？",
   LocaleKeys.cartIsEmpty: "购物车空的",
   LocaleKeys.goShoppingNow: "现在去购物",
+  LocaleKeys.autoClearCart: "购物车内容为临时数据，离开当前页面后将自动清空。",
+  LocaleKeys.leave: "离开",
 };

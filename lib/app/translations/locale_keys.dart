@@ -89,4 +89,6 @@ abstract class LocaleKeys {
   static const String areYouSureDelete = "areYouSureDelete";
   static const String cartIsEmpty = "cartIsEmpty";
   static const String goShoppingNow = "goShoppingNow";
+  static const String autoClearCart = "autoClearCart";
+  static const String leave = "leave";
 }

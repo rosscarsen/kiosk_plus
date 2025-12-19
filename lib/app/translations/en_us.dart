@@ -90,4 +90,7 @@ Map<String, String> get enUS => {
   LocaleKeys.areYouSureDelete: "Are you sure delete?",
   LocaleKeys.cartIsEmpty: "Cart is empty",
   LocaleKeys.goShoppingNow: "Go shopping now",
+  LocaleKeys.autoClearCart:
+      "Cart content is temporary data, will be automatically cleared after leaving the current page.",
+  LocaleKeys.leave: "Leave",
 };
