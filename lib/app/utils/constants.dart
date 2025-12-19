@@ -9,7 +9,9 @@ class AppColors {
   static const Color kLine = Color(0xFFE5E7EB); // 分割线
   static const Color kRequire = Color(0xFFFF4D4F); // 必填提示
   static const Color kActive = Color(0xFF436CFF); // 激活状态
-  static const Color kDelete = Color(0xFFD32F2F); // 删除提示 0xFFE53935
+  static const Color kDelete = Color(0xFFEF4444); // 删除提示 0xFFE53935
   static const Color kEdit = Color(0xFF436CFF); // 修改提示
   static const Color kGoShopping = Color(0xFFFF8F00); // 去購物
+  static const Color kCheckOut = Color(0xFF1E40AF); // 去購物
+  static const Color kAddCart = Color(0xFF2563EB); // 加購物车
 }
