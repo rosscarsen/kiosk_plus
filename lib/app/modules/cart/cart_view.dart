@@ -365,39 +365,38 @@ class CartView extends GetView<CartController> {
   Widget _buildBottomBar(BuildContext context) {
     return ColoredBox(
       color: Color(0xFFF8FAFC),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Divider(),
-          GetBuilder<CartController>(
-            id: "totalAmount",
-            builder: (ctl) {
-              // 数据加载完成前显示骨架屏
-              if (!ctl.isDataReady) {
-                return Skeletonizer(
-                  enabled: true,
-                  effect: const ShimmerEffect(
-                    baseColor: Color(0xFFE0E0E0),
-                    highlightColor: Color(0xFFF5F5F5),
-                    duration: Duration(milliseconds: 1200),
-                  ),
-                  child: ListTile(
-                    title: Text('Item number  as title'),
-                    subtitle: const Text('Subtitle here'),
-                    trailing: const Icon(Icons.ac_unit),
-                  ),
-                );
-              }
-              if (ctl.cartList.isEmpty) {
-                return Container();
-              }
-              String subtitle = LocaleKeys.totalPiece.trArgs([ctl.cartQuantity.toString()]);
+      child: GetBuilder<CartController>(
+        id: "totalAmount",
+        builder: (ctl) {
+          // 数据加载完成前显示骨架屏
+          if (!ctl.isDataReady) {
+            return Skeletonizer(
+              enabled: true,
+              effect: const ShimmerEffect(
+                baseColor: Color(0xFFE0E0E0),
+                highlightColor: Color(0xFFF5F5F5),
+                duration: Duration(milliseconds: 1200),
+              ),
+              child: ListTile(
+                title: Text('Item number  as title'),
+                subtitle: const Text('Subtitle here'),
+                trailing: const Icon(Icons.ac_unit),
+              ),
+            );
+          }
+          if (ctl.cartList.isEmpty) {
+            return Container();
+          }
+          String subtitle = LocaleKeys.totalPiece.trArgs([ctl.cartQuantity.toString()]);
 
-              if (ctl.calendarDiscount != Decimal.zero) {
-                subtitle +=
-                    " (${LocaleKeys.discount.trArgs([ctl.calendarDiscount.toString()])}:${ctl.calendarDiscount}%)";
-              }
-              return ListTile(
+          if (ctl.calendarDiscount != Decimal.zero) {
+            subtitle += " (${LocaleKeys.discount.trArgs([ctl.calendarDiscount.toString()])}:${ctl.calendarDiscount}%)";
+          }
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Divider(),
+              ListTile(
                 title: Text(
                   "${LocaleKeys.total.tr}: \$${DecUtil.formatAmount(ctl.cartAmount)}",
                   style: const TextStyle(
@@ -421,10 +420,10 @@ class CartView extends GetView<CartController> {
                   child: Text(LocaleKeys.checkout.tr, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   onPressed: () {},
                 ),
-              );
-            },
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
