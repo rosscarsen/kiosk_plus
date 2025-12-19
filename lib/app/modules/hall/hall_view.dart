@@ -518,7 +518,7 @@ class CategoryAndProducts extends StatelessWidget {
     return imagePath.isEmpty
         ? Image.asset("assets/notfound.png")
         : CachedNetworkImage(
-            imageUrl: imagePath.isNotEmpty ? "$imagePath?ts=${DateTime.now().millisecondsSinceEpoch}" : "",
+            imageUrl: imagePath,
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
