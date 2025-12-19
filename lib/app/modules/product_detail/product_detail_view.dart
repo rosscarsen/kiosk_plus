@@ -56,125 +56,63 @@ class ProductDetailView extends GetView<ProductDetailController> {
           },
         ),
       ),
-
-      bottomNavigationBar: ColoredBox(
-        color: Color(0xFFF8FAFC),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              decoration: BoxDecoration(border: Border(top: Divider.createBorderSide(context, width: 1.0))),
-            ),
-            GetBuilder<ProductDetailController>(
-              id: "bottom",
-              builder: (ctl) {
-                // 数据加载完成前显示骨架屏
-                if (!ctl.isDataReady) {
-                  return Skeletonizer(
-                    enabled: true,
-                    effect: const ShimmerEffect(
-                      baseColor: Color(0xFFE0E0E0),
-                      highlightColor: Color(0xFFF5F5F5),
-                      duration: Duration(milliseconds: 1200),
-                    ),
-                    child: ListTile(
-                      title: Text('Item number  as title'),
-                      subtitle: const Text('Subtitle here'),
-                      trailing: const Icon(Icons.ac_unit),
-                    ),
-                  );
-                }
-                String subtitle = LocaleKeys.totalPiece.trArgs([ctl.productQty.toString()]);
-
-                if (ctl.calendarDiscount != Decimal.zero) {
-                  subtitle +=
-                      " (${LocaleKeys.discount.trArgs([ctl.calendarDiscount.toString()])}:${ctl.calendarDiscount}%)";
-                }
-                return ListTile(
-                  title: Text(
-                    "${LocaleKeys.total.tr}: \$${DecUtil.formatAmount(ctl.totalAmount)}",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.kPrice,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  subtitle: Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.kPrice,
-                      letterSpacing: 0.5,
-                    ),
-                  ),
-                  trailing: ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.kAddCart, foregroundColor: Colors.white),
-                    child: Text(LocaleKeys.addToCart.tr),
-                    onPressed: () {
-                      final bool validate = ctl.checkSetMeal();
-                      if (validate && (ctl.formKey.currentState?.saveAndValidate() ?? false)) {
-                        ctl.addToCart();
-                      } else {
-                        logger.f("验证失败");
-                      }
-                    },
-                  ),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
     );
   }
 
   /// 主视图
   Widget _buildMain(BuildContext context, ProductDetailController ctl) {
-    return NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            expandedHeight: 200,
-            floating: false,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Center(
-                child: Container(
-                  width: 200, // 固定宽度
-                  margin: const EdgeInsets.symmetric(vertical: 16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(color: Colors.black.withAlpha(26), blurRadius: 10, offset: const Offset(0, 4)),
-                    ],
+    return Column(
+      children: [
+        Expanded(
+          child: NestedScrollView(
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  expandedHeight: 200,
+                  floating: false,
+                  pinned: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Center(
+                      child: Container(
+                        width: 200, // 固定宽度
+                        margin: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(color: Colors.black.withAlpha(26), blurRadius: 10, offset: const Offset(0, 4)),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: _buildProductImageView(ctl.product?.imagesPath ?? ""),
+                        ),
+                      ),
+                    ),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: _buildProductImageView(ctl.product?.imagesPath ?? ""),
+                  leading: Container(
+                    margin: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withAlpha(235),
+                      borderRadius: BorderRadius.circular(16),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withAlpha(40), blurRadius: 6, offset: const Offset(0, 2)),
+                      ],
+                    ),
+                    child: IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.kTextMain),
+                      onPressed: () => Get.back(),
+                      splashRadius: 24,
+                    ),
                   ),
                 ),
-              ),
-            ),
-            leading: Container(
-              margin: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.white.withAlpha(235),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: Colors.black.withAlpha(40), blurRadius: 6, offset: const Offset(0, 2))],
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.kTextMain),
-                onPressed: () => Get.back(),
-                splashRadius: 24,
-              ),
-            ),
+              ];
+            },
+            body: FormBuilder(key: ctl.formKey, child: _buildDetail(context, ctl)),
           ),
-        ];
-      },
-      body: FormBuilder(key: ctl.formKey, child: _buildDetail(context, ctl)),
+        ),
+        _buildBottomBar(context),
+      ],
     );
   }
 
@@ -258,6 +196,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
           ),
           // 商品数量选择器
           CartQuantityStepper(
+            initialValue: ctl.productQty,
             onChanged: (int value) {
               ctl.productQty = value;
               ctl.changeTotal();
@@ -282,7 +221,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
           const SizedBox(height: 12),
           FormBuilderField<List<String>>(
             name: 'remark',
-            initialValue: const [],
+            initialValue: ctl.selectRemarks,
             onChanged: (List<String>? value) {
               ctl.selectRemarks = value ?? [];
               ctl.changeTotal();
@@ -406,7 +345,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
                     final itemAllItems = setMealData
                         .map((e) => e.mProductCode)
                         .whereType<String>()
-                        .where((e) => e.isNotEmpty)
+                        .where((e) => e.trim().isNotEmpty)
                         .toList();
                     ctl.changeSelectSetMeal(itemAllSelectedItems: currentValues, itemAllItems: itemAllItems);
                     if (currentValues.isEmpty) {
@@ -508,6 +447,78 @@ class ProductDetailView extends GetView<ProductDetailController> {
                 ),
         );
       },
+    );
+  }
+
+  /// 详情页面底部栏
+  Widget _buildBottomBar(BuildContext context) {
+    return ColoredBox(
+      color: Color(0xFFF8FAFC),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Divider(),
+          GetBuilder<ProductDetailController>(
+            id: "bottom",
+            builder: (ctl) {
+              // 数据加载完成前显示骨架屏
+              if (!ctl.isDataReady) {
+                return Skeletonizer(
+                  enabled: true,
+                  effect: const ShimmerEffect(
+                    baseColor: Color(0xFFE0E0E0),
+                    highlightColor: Color(0xFFF5F5F5),
+                    duration: Duration(milliseconds: 1200),
+                  ),
+                  child: ListTile(
+                    title: Text('Item number  as title'),
+                    subtitle: const Text('Subtitle here'),
+                    trailing: const Icon(Icons.ac_unit),
+                  ),
+                );
+              }
+              String subtitle = LocaleKeys.totalPiece.trArgs([ctl.productQty.toString()]);
+
+              if (ctl.calendarDiscount != Decimal.zero) {
+                subtitle +=
+                    " (${LocaleKeys.discount.trArgs([ctl.calendarDiscount.toString()])}:${ctl.calendarDiscount}%)";
+              }
+              return ListTile(
+                title: Text(
+                  "${LocaleKeys.total.tr}: \$${DecUtil.formatAmount(ctl.totalAmount)}",
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.kPrice,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                subtitle: Text(
+                  subtitle,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.kPrice,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                trailing: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.kAddCart, foregroundColor: Colors.white),
+                  child: Text(ctl.isEdit ? LocaleKeys.edit.tr : LocaleKeys.addToCart.tr),
+                  onPressed: () {
+                    final bool validate = ctl.checkSetMeal();
+                    if (validate && (ctl.formKey.currentState?.saveAndValidate() ?? false)) {
+                      ctl.addToCart();
+                    } else {
+                      logger.f("验证失败");
+                    }
+                  },
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

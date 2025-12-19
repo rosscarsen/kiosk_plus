@@ -15,6 +15,7 @@ import '../../translations/locale_keys.dart' show LocaleKeys;
 import '../../utils/custom_dialog.dart';
 import '../../utils/dec_calc.dart';
 import '../../utils/logger.dart';
+import '../cart/cart_controller.dart';
 import '../hall/hall_controller.dart';
 
 class ProductDetailController extends GetxController {
@@ -51,8 +52,11 @@ class ProductDetailController extends GetxController {
   List<SetMealDatum> get setMealList =>
       extraInfo.expand((e) => e.setMealLimit?.setMealData ?? []).cast<SetMealDatum>().toList();
 
-  /// 选择的套餐备注
+  /// 选择的套餐
   List<String> selectSetMeal = [];
+
+  /// 是否是编辑模式(从大厅页面进入为false,从购物车页面进入为true)
+  bool isEdit = false;
 
   @override
   void onInit() {
@@ -89,7 +93,28 @@ class ProductDetailController extends GetxController {
   /// 如果数据不为空，则设置isDataReady为true
   void initData() async {
     isDataReady = false;
-    product = Get.arguments as Product?;
+    final arguments = Get.arguments;
+    if (arguments is Product) {
+      //正常的商品详情展示
+      product = arguments;
+      isEdit = false;
+    }
+    if (arguments is CartModel) {
+      //从购物车进入商品详情
+      product = arguments.product;
+      productQty = product?.qty ?? 1;
+      selectRemarks =
+          arguments.remarkList?.map((e) => e.mDetail).whereType<String>().where((e) => e.trim().isNotEmpty).toList() ??
+          [];
+      selectSetMeal =
+          arguments.setMealList
+              ?.map((e) => e.mProductCode)
+              .whereType<String>()
+              .where((e) => e.trim().isNotEmpty)
+              .toList() ??
+          [];
+      isEdit = true;
+    }
     final productID = product?.tProductId.toString().trim() ?? "";
     // 初始日历折扣
     calendarDiscount = DecUtil.from(await box.get(Config.calendarDiscount) ?? "0");
@@ -110,36 +135,43 @@ class ProductDetailController extends GetxController {
     if (product?.productRemarks?.isNotEmpty ?? false) {
       await getProductRemark(product!.productRemarks!);
     }
+    if (arguments is Product) {
+      //正常的商品详情展示
+      for (var e in extraInfo) {
+        final setMealLimit = e.setMealLimit;
 
-    for (var e in extraInfo) {
-      final setMealLimit = e.setMealLimit;
-
-      // 套餐最大选择数量
-      final tempMax = setMealLimit?.limitMax ?? 0;
-      final max = tempMax > 0 ? tempMax : 1;
-      // 强制选择
-      final foreSelect = setMealLimit?.obligatory ?? 0;
-      // 套餐数据
-      final setMealData = setMealLimit?.setMealData ?? [];
-      // 根据最大选择数量取默认选中的套餐
-      List<String> defaultSelected = setMealData
-          .where((e) => e.soldOut == 0)
-          .take(max)
-          .map((e) => e.mProductCode ?? "")
-          .toList();
-      if (max > 1) {
-        if (foreSelect == 1) {
-          defaultSelected = setMealData
-              .where((e) => e.soldOut == 0)
-              .take(max)
-              .map((e) => e.mProductCode ?? "")
-              .toList();
-        } else {
-          defaultSelected = setMealData.where((e) => e.soldOut == 0).take(1).map((e) => e.mProductCode ?? "").toList();
+        // 套餐最大选择数量
+        final tempMax = setMealLimit?.limitMax ?? 0;
+        final max = tempMax > 0 ? tempMax : 1;
+        // 强制选择
+        final foreSelect = setMealLimit?.obligatory ?? 0;
+        // 套餐数据
+        final setMealData = setMealLimit?.setMealData ?? [];
+        // 根据最大选择数量取默认选中的套餐
+        List<String> defaultSelected = setMealData
+            .where((e) => e.soldOut == 0)
+            .take(max)
+            .map((e) => e.mProductCode ?? "")
+            .toList();
+        if (max > 1) {
+          if (foreSelect == 1) {
+            defaultSelected = setMealData
+                .where((e) => e.soldOut == 0)
+                .take(max)
+                .map((e) => e.mProductCode ?? "")
+                .toList();
+          } else {
+            defaultSelected = setMealData
+                .where((e) => e.soldOut == 0)
+                .take(1)
+                .map((e) => e.mProductCode ?? "")
+                .toList();
+          }
         }
+        selectSetMeal.addAll(defaultSelected);
       }
-      selectSetMeal.addAll(defaultSelected);
     }
+
     // 初始化展开控制器
     groupController = ExpansionGroupController(length: extraInfo.length, toggleType: ToggleType.expandOnlyCurrent);
     changeTotal();
@@ -345,10 +377,20 @@ class ProductDetailController extends GetxController {
         }
         await box.put(Config.shoppingCart, boxCartList);
       }
-      CustomDialog.successMessages(LocaleKeys.paramSuccess.trArgs([LocaleKeys.addToCart.tr]));
+      if (isEdit) {
+        CustomDialog.successMessages(LocaleKeys.paramSuccess.trArgs([LocaleKeys.edit.tr]));
+      } else {
+        CustomDialog.successMessages(LocaleKeys.paramSuccess.trArgs([LocaleKeys.addToCart.tr]));
+      }
       Future.delayed(Duration.zero, () {
-        final hallController = Get.find<HallController>();
-        hallController.calculateCartAmount();
+        if (Get.isRegistered<HallController>()) {
+          final hallController = Get.find<HallController>();
+          hallController.calculateCartAmount();
+        }
+        if (Get.isRegistered<CartController>()) {
+          final cartController = Get.find<CartController>();
+          cartController.initData();
+        }
         Get.back();
       });
     } catch (e) {
