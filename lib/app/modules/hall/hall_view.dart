@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kiosk_plus/app/config.dart';
 import 'package:responsive_grid_list/responsive_grid_list.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:view_tabbar/view_tabbar.dart';
@@ -9,6 +10,7 @@ import '../../model/api_data_model/data_result_model.dart';
 import '../../routes/app_pages.dart';
 import '../../translations/locale_keys.dart';
 import '../../utils/constants.dart';
+import '../../utils/custom_alert.dart';
 import '../../utils/dec_calc.dart';
 import '../../utils/logger.dart';
 import '../../widgets/auto_text.dart';
@@ -19,57 +21,77 @@ class HallView extends GetView<HallController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      appBar: AppBar(
-        elevation: 0.5,
-        centerTitle: true,
-        title: GetBuilder<HallController>(
-          id: "hall_app_bar",
-          builder: (_) => Text(
-            controller.companyName,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.w600,
-              color: AppColors.kTextMain,
-              letterSpacing: 0.3,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (_, _) async {
+        final box = controller.box;
+        final cartList = await box.get(Config.shoppingCart) as List?;
+        if (cartList?.isNotEmpty ?? false) {
+          CustomAlert.iosAlert(
+            message: LocaleKeys.autoClearCart.tr,
+            showCancel: true,
+            confirmText: LocaleKeys.leave.tr,
+            onConfirm: () async {
+              await controller.box.delete(Config.shoppingCart);
+              Get.back();
+            },
+          );
+        } else {
+          Get.back();
+        }
+      },
+      child: Scaffold(
+        extendBody: true,
+        appBar: AppBar(
+          elevation: 0.5,
+          centerTitle: true,
+          title: GetBuilder<HallController>(
+            id: "hall_app_bar",
+            builder: (_) => Text(
+              controller.companyName,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: AppColors.kTextMain,
+                letterSpacing: 0.3,
+              ),
             ),
           ),
-        ),
-        actions: [
-          GetBuilder<HallController>(
-            id: "shoppingCart",
-            builder: (ctl) {
-              return InkWell(
-                onTap: () {
-                  Get.toNamed(Routes.CART);
-                },
-                child: Container(
-                  margin: const EdgeInsets.only(right: 12),
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  decoration: BoxDecoration(color: AppColors.kBg, borderRadius: BorderRadius.circular(24)),
-                  child: Row(
-                    spacing: 4.0,
-                    children: [
-                      Badge.count(
-                        count: ctl.cartQuantity,
-                        child: const Icon(Icons.shopping_cart, size: 18, color: AppColors.kPrimary),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        '\$${DecUtil.formatAmount(ctl.cartAmount)}',
-                        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.kPrimary),
-                      ),
-                    ],
+          actions: [
+            GetBuilder<HallController>(
+              id: "shoppingCart",
+              builder: (ctl) {
+                return InkWell(
+                  onTap: () {
+                    Get.toNamed(Routes.CART);
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(right: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(color: AppColors.kBg, borderRadius: BorderRadius.circular(24)),
+                    child: Row(
+                      spacing: 4.0,
+                      children: [
+                        Badge.count(
+                          count: ctl.cartQuantity,
+                          child: const Icon(Icons.shopping_cart, size: 18, color: AppColors.kPrimary),
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          '\$${DecUtil.formatAmount(ctl.cartAmount)}',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.kPrimary),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+                );
+              },
+            ),
+          ],
+        ),
 
-      body: _buildMain(context),
+        body: _buildMain(context),
+      ),
     );
   }
 
