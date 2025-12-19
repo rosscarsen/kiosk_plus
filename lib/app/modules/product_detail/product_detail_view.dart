@@ -435,7 +435,7 @@ class ProductDetailView extends GetView<ProductDetailController> {
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                                 enabled: e.soldOut == 0,
                                 value: e.mProductCode ?? "",
-                                title: Text(e.mProductCode ?? ""),
+                                title: Text(e.mName ?? ""),
                                 selected: selectedValues.contains(e.mProductCode ?? ""),
                                 selectedColor: AppColors.kPrimary,
                                 checkColor: Colors.white,
