@@ -19,48 +19,51 @@ class HomeView extends GetView<HomeController> {
   Widget build(BuildContext context) {
     double height = context.height;
     double width = context.width;
-    return Scaffold(
-      backgroundColor: Colors.transparent,
-      extendBodyBehindAppBar: true,
-      resizeToAvoidBottomInset: false,
-      extendBody: true,
-      body: Container(
-        width: width,
-        height: height,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/kiosk_bg.jpg'),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(Colors.black45, BlendMode.multiply),
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        extendBodyBehindAppBar: true,
+        resizeToAvoidBottomInset: false,
+        extendBody: true,
+        body: Container(
+          width: width,
+          height: height,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/kiosk_bg.jpg'),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.black45, BlendMode.multiply),
+            ),
           ),
-        ),
-        child: SafeArea(
-          bottom: false,
-          child: Stack(
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: height * 0.1, horizontal: width * 0.08),
-                child: Align(alignment: Alignment.topCenter, child: _buildMainView(context)),
-              ),
-              Positioned(
-                right: 0,
-                top: 0,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () async {
-                    final triggered = controller.handleSecretTap();
-                    if (triggered && !(Get.isDialogOpen ?? false)) {
-                      await openAppSet();
-                    }
-                  },
-                  child: SizedBox(
-                    width: width * 0.3,
-                    height: height * 0.3,
-                    // child: Container(color: Colors.red),
+          child: SafeArea(
+            bottom: false,
+            child: Stack(
+              children: [
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: height * 0.1, horizontal: width * 0.08),
+                  child: Align(alignment: Alignment.topCenter, child: _buildMainView(context)),
+                ),
+                Positioned(
+                  right: 0,
+                  top: 0,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () async {
+                      final triggered = controller.handleSecretTap();
+                      if (triggered && !(Get.isDialogOpen ?? false)) {
+                        await openAppSet();
+                      }
+                    },
+                    child: SizedBox(
+                      width: width * 0.3,
+                      height: height * 0.3,
+                      // child: Container(color: Colors.red),
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
