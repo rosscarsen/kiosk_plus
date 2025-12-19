@@ -84,4 +84,10 @@ Map<String, String> get enUS => {
   LocaleKeys.acceptAgree: "By placing an order, you agree to our",
   LocaleKeys.termAndConditions: "Term and Conditions",
   LocaleKeys.privacy: "Privacy Policy",
+  LocaleKeys.checkout: "Checkout",
+  LocaleKeys.checkoutSuccess: "Checkout Success",
+  LocaleKeys.checkoutFailed: "Checkout Failed",
+  LocaleKeys.areYouSureDelete: "Are you sure delete?",
+  LocaleKeys.cartIsEmpty: "Cart is empty",
+  LocaleKeys.goShoppingNow: "Go shopping now",
 };

@@ -83,4 +83,10 @@ abstract class LocaleKeys {
   static const String acceptAgree = "acceptAgree";
   static const String termAndConditions = "termAndConditions";
   static const String privacy = "privacy";
+  static const String checkout = "checkout";
+  static const String checkoutSuccess = "checkoutSuccess";
+  static const String checkoutFailed = "checkoutFailed";
+  static const String areYouSureDelete = "areYouSureDelete";
+  static const String cartIsEmpty = "cartIsEmpty";
+  static const String goShoppingNow = "goShoppingNow";
 }
