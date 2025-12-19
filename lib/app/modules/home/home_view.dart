@@ -120,6 +120,7 @@ class HomeView extends GetView<HomeController> {
                       Config.companyInfo,
                       Config.categoryTreeProduct,
                       Config.productRemarks,
+                      Config.shoppingCart,
                     ]);
                     Get.offAllNamed(Routes.LOGIN);
                   },
