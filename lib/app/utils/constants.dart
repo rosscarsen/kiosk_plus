@@ -12,6 +12,6 @@ class AppColors {
   static const Color kDelete = Color(0xFFEF4444); // 删除提示 0xFFE53935
   static const Color kEdit = Color(0xFF436CFF); // 修改提示
   static const Color kGoShopping = Color(0xFFFF8F00); // 去購物
-  static const Color kCheckOut = Color(0xFF1E40AF); // 去購物
+  static const Color kCheckOut = Color(0xFFFF0D63); // 去購物
   static const Color kAddCart = Color(0xFF2563EB); // 加購物车
 }
