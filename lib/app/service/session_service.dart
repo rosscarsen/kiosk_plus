@@ -17,8 +17,8 @@ class SessionService extends GetxService {
     super.onInit();
     _sessionStateStream = StreamController<SessionState>.broadcast();
     _sessionConfig = SessionConfig(
-      invalidateSessionForAppLostFocus: const Duration(seconds: 6), // 当应用失去焦点时超时
-      invalidateSessionForUserInactivity: const Duration(seconds: 6), // 用户不活动超时
+      invalidateSessionForAppLostFocus: const Duration(minutes: 5), // 当应用失去焦点时超时
+      invalidateSessionForUserInactivity: const Duration(minutes: 5), // 用户不活动超时
     );
 
     _sessionConfig.stream.listen((SessionTimeoutState timeoutEvent) {
