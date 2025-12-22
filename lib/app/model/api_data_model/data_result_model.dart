@@ -24,8 +24,16 @@ class DataResultModel {
   final List<ProductRemark>? productRemarks;
   @HiveField(4)
   final CompanyInfo? companyInfo;
+  @HiveField(5)
+  final List<String>? carouselImages;
 
-  DataResultModel({this.calendarDiscount, this.categoryTreeProduct, this.productRemarks, this.companyInfo});
+  DataResultModel({
+    this.calendarDiscount,
+    this.categoryTreeProduct,
+    this.productRemarks,
+    this.companyInfo,
+    this.carouselImages,
+  });
 
   factory DataResultModel.fromJson(Map<String, dynamic> json) => DataResultModel(
     calendarDiscount: json["calendarDiscount"],
@@ -37,6 +45,7 @@ class DataResultModel {
         : List<ProductRemark>.from(json["productRemarks"]!.map((x) => ProductRemark.fromJson(x))),
 
     companyInfo: json["companyInfo"] == null ? null : CompanyInfo.fromJson(json["companyInfo"]),
+    carouselImages: json["carouselImages"] == null ? [] : List<String>.from(json["carouselImages"]!.map((x) => x)),
   );
 
   Map<String, dynamic> toJson() => {
@@ -46,6 +55,7 @@ class DataResultModel {
         ? []
         : List<dynamic>.from(categoryTreeProduct!.map((x) => x.toJson())),
     "productRemarks": productRemarks == null ? [] : List<dynamic>.from(productRemarks!.map((x) => x.toJson())),
+    "carouselImages": carouselImages == null ? [] : List<dynamic>.from(carouselImages!.map((x) => x)),
   };
 }
 

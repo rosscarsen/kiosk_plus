@@ -21,13 +21,14 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
       categoryTreeProduct: (fields[2] as List?)?.cast<CategoryTreeProduct>(),
       productRemarks: (fields[3] as List?)?.cast<ProductRemark>(),
       companyInfo: fields[4] as CompanyInfo?,
+      carouselImages: (fields[5] as List?)?.cast<String>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, DataResultModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(1)
       ..write(obj.calendarDiscount)
       ..writeByte(2)
@@ -35,7 +36,9 @@ class DataResultModelAdapter extends TypeAdapter<DataResultModel> {
       ..writeByte(3)
       ..write(obj.productRemarks)
       ..writeByte(4)
-      ..write(obj.companyInfo);
+      ..write(obj.companyInfo)
+      ..writeByte(5)
+      ..write(obj.carouselImages);
   }
 
   @override
