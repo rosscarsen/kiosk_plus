@@ -4,7 +4,7 @@ publish_to: 'none'
 version: 1.0.1+1
 
 environment:
-  sdk: ^3.10.0
+  sdk: ^3.10.4
 dependencies:
   flutter:
     sdk: flutter
@@ -15,12 +15,11 @@ dependencies:
   loading_animation_widget: ^1.3.0
   easy_image_viewer: ^1.5.1
   responsive_grid_list: ^1.4.1
-  skeletonizer: ^2.1.0+1
+  skeletonizer: ^2.1.2
   intl: ^0.20.2
   flutter_smart_dialog: ^4.9.8+9
   json_annotation: ^4.9.0
   cached_network_image: ^3.4.1
-  expandable: ^5.0.1
   flutter_localizations:
     sdk: flutter
   logger: ^2.6.2
@@ -30,31 +29,33 @@ dependencies:
   flutter_gradient_animation_text: ^1.0.2
   flutter_pos_printer_platform_image_3_sdt: ^1.2.25
   esc_pos_utils_plus: ^2.0.4
-  app_settings: ^6.1.1
+  app_settings: ^7.0.0
   characters: ^1.4.0
   flutter_native_splash: ^2.4.7
   flutter_launcher_icons: ^0.14.4
   local_session_timeout: ^3.2.0
   carousel_slider: ^5.1.1
-  hive_ce: ^2.15.1
+  hive_ce: ^2.16.0
   hive_ce_flutter: ^2.3.3
   webcrypto: ^0.6.0
   flutter_auto_size_text: ^4.1.0
   view_tabbar: ^1.3.2
   decimal: ^3.2.4
-  sliver_sticky_collapsable_panel: ^3.0.2
-  super_sliver_list: ^0.4.1
-
+  flutter_multi_select_items: ^0.4.3
+  expansion_tile_group: ^2.3.0
+  flutter_inappwebview: ^6.1.5
+  flutter_markdown_plus: ^1.0.5
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  json_serializable: ^6.11.2
+  json_serializable: ^6.11.3
   build_runner: ^2.10.4
-  hive_ce_generator: ^1.10.0
+  hive_ce_generator: ^1.10.1
 flutter:
   uses-material-design: true
   assets:
     - assets/
+    - assets/carouselImages/
 get_cli:
   sub_folder: false  
