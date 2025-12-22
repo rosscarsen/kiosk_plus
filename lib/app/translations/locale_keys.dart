@@ -91,4 +91,8 @@ abstract class LocaleKeys {
   static const String goShoppingNow = "goShoppingNow";
   static const String autoClearCart = "autoClearCart";
   static const String leave = "leave";
+  static const String back = "back";
+  static const String pointsConsumption = "pointsConsumption";
+  static const String payReadCard = "payReadCard";
+  static const String sendOrder = "sendOrder";
 }

@@ -92,4 +92,8 @@ Map<String, String> zhHK = {
   LocaleKeys.goShoppingNow: "現在去購物",
   LocaleKeys.autoClearCart: "購物車內容為臨時數據，離開當前頁面後將自動清空。",
   LocaleKeys.leave: "離開",
+  LocaleKeys.back: "返回",
+  LocaleKeys.pointsConsumption: "積分消費",
+  LocaleKeys.payReadCard: "請將二維碼或卡放到卡口讀取",
+  LocaleKeys.sendOrder: "發送訂單",
 };

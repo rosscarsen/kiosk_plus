@@ -93,4 +93,8 @@ Map<String, String> get enUS => {
   LocaleKeys.autoClearCart:
       "Cart content is temporary data, will be automatically cleared after leaving the current page.",
   LocaleKeys.leave: "Leave",
+  LocaleKeys.back: "Back",
+  LocaleKeys.pointsConsumption: "Points Consumption",
+  LocaleKeys.payReadCard: "Pay Read Card",
+  LocaleKeys.sendOrder: "Send Order",
 };

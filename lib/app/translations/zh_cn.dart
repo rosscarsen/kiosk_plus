@@ -92,4 +92,8 @@ Map<String, String> get zhCN => {
   LocaleKeys.goShoppingNow: "现在去购物",
   LocaleKeys.autoClearCart: "购物车内容为临时数据，离开当前页面后将自动清空。",
   LocaleKeys.leave: "离开",
+  LocaleKeys.back: "返回",
+  LocaleKeys.pointsConsumption: "积分消费",
+  LocaleKeys.payReadCard: "请将二維碼或卡放到卡口读取",
+  LocaleKeys.sendOrder: "发送订单",
 };
