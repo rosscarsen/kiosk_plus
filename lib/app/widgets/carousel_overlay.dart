@@ -35,53 +35,37 @@ class _CarouselOverlayState extends State<CarouselOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    final double height = MediaQuery.of(context).size.height;
-    final double width = MediaQuery.of(context).size.width;
     return Positioned.fill(
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: widget.onTap,
         child: CarouselSlider(
           options: CarouselOptions(
-            height: height,
+            height: double.infinity,
             viewportFraction: 1.0,
             enlargeCenterPage: false,
             autoPlay: true,
             scrollDirection: Axis.vertical,
             autoPlayInterval: Duration(seconds: 8),
           ),
-          items: carouselImages?.isNotEmpty ?? false
-              ? carouselImages!
-                    .map(
-                      (item) => Center(
-                        child: CachedNetworkImage(
-                          imageUrl: item,
-                          progressIndicatorBuilder: (context, url, downloadProgress) => Image.asset(
-                            'assets/defaultCarousel.png',
-                            fit: BoxFit.cover,
-                            width: width,
-                            height: height,
-                          ),
-                          errorWidget: (context, url, error) => Image.asset(
-                            'assets/defaultCarousel.png',
-                            fit: BoxFit.cover,
-                            width: width,
-                            height: height,
-                          ),
-                          fit: BoxFit.cover,
-                          width: width,
-                          height: height,
-                        ),
-                        //Image.network(item, fit: BoxFit.cover, height: height),
-                      ),
-                    )
-                    .toList()
+          items: (carouselImages?.isNotEmpty ?? false)
+              ? carouselImages!.map((item) {
+                  return SizedBox.expand(
+                    child: CachedNetworkImage(
+                      imageUrl: item,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) => Image.asset('assets/defaultCarousel.png', fit: BoxFit.cover),
+                      errorWidget: (context, url, error) =>
+                          Image.asset('assets/defaultCarousel.png', fit: BoxFit.cover),
+                    ),
+                  );
+                }).toList()
               : [
                   'assets/carouselImages/1.png',
                   'assets/carouselImages/2.png',
                   'assets/carouselImages/3.png',
                   'assets/carouselImages/4.png',
-                ].map((e) => Image.asset(e)).toList(),
+                ].map((e) => SizedBox.expand(child: Image.asset(e, fit: BoxFit.cover))).toList(),
         ),
       ),
     );
