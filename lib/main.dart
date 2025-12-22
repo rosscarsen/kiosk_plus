@@ -4,12 +4,15 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
+import 'package:local_session_timeout/local_session_timeout.dart';
 
 import 'app/config.dart';
 import 'app/model/login/login_data_model.dart';
 import 'app/routes/app_pages.dart';
 import 'app/service/data_sync_service.dart';
+import 'app/service/session_service.dart';
 import 'app/translations/app_translations.dart';
+import 'app/widgets/carousel_overlay.dart';
 import 'hive_registrar.g.dart';
 
 void main() async {
@@ -33,6 +36,7 @@ void main() async {
 
   final String initialRoute = hasLogin ? Routes.HOME : Routes.LOGIN;
   Get.put<DataSyncService>(DataSyncService()); // 初始化数据同步服务
+  Get.put<SessionService>(SessionService()); // 初始化会话服务
   runApp(MyApp(initialRoute: initialRoute, initialLocale: initialLocale));
 }
 
@@ -69,18 +73,37 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       defaultTransition: Transition.noTransition,
       builder: (context, child) {
-        child = MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0), alwaysUse24HourFormat: true),
-          child: child!,
-        );
-        child = GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-          child: child,
+        final session = SessionService.to;
+
+        final app = child!;
+
+        // Session 管理
+        final managedApp = SessionTimeoutManager(
+          sessionConfig: session.sessionConfig,
+          sessionStateStream: session.stream,
+          child: app,
         );
 
-        /// 提示框
-        child = FlutterSmartDialog.init()(context, child);
+        //  MediaQuery / GestureDetector / FlutterSmartDialog
+        Widget wrapped = MediaQuery(
+          data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0), alwaysUse24HourFormat: true),
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            child: FlutterSmartDialog.init()(context, managedApp),
+          ),
+        );
+
+        // Stack + Overlay
+        Widget withOverlay = Obx(() {
+          return Stack(
+            children: [
+              wrapped,
+              if (session.isIdle.value) CarouselOverlay(onTap: () => session.onUserActivity()),
+            ],
+          );
+        });
+
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: const SystemUiOverlayStyle(
             statusBarColor: Colors.transparent,
@@ -88,7 +111,7 @@ class MyApp extends StatelessWidget {
             systemNavigationBarDividerColor: Colors.transparent,
             systemNavigationBarContrastEnforced: false,
           ),
-          child: child,
+          child: withOverlay,
         );
       },
     );
