@@ -69,6 +69,7 @@ class DataSyncService extends GetxService {
           if (parsed.companyInfo != null) Config.companyInfo: parsed.companyInfo,
           if (parsed.categoryTreeProduct?.isNotEmpty ?? false) Config.categoryTreeProduct: parsed.categoryTreeProduct,
           if (parsed.productRemarks?.isNotEmpty ?? false) Config.productRemarks: parsed.productRemarks,
+          if (parsed.carouselImages?.isNotEmpty ?? false) Config.carouselImages: parsed.carouselImages,
         });
       } else {
         logger.w('API call returned null or failed: ${response.error}');
