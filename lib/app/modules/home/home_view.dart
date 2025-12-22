@@ -124,6 +124,7 @@ class HomeView extends GetView<HomeController> {
                       Config.categoryTreeProduct,
                       Config.productRemarks,
                       Config.shoppingCart,
+                      Config.carouselImages,
                     ]);
                     Get.offAllNamed(Routes.LOGIN);
                   },
