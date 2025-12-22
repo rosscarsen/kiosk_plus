@@ -24,7 +24,8 @@ class _CarouselOverlayState extends State<CarouselOverlay> {
   }
 
   Future<void> initData() async {
-    final images = (await box.get(Config.carouselImages) as List?)?.cast<String>() ?? [];
+    final raw = await box.get(Config.carouselImages);
+    final List<String> images = raw is List ? raw.whereType<String>().toList() : [];
     if (images.isNotEmpty) {
       setState(() {
         carouselImages = List<String>.from(images);
