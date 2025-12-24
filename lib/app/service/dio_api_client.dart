@@ -40,15 +40,17 @@ class ApiClient {
 
     _dio = Dio(baseOptions);
     // ⚠️ 忽略 HTTPS 证书验证（仅在 Release 模式启用）
-    if (const bool.fromEnvironment('dart.vm.product')) {
-      (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
-        final client = HttpClient();
-        client.badCertificateCallback = (X509Certificate cert, String host, int port) {
-          return true;
-        };
-        return client;
+    (_dio.httpClientAdapter as IOHttpClientAdapter).createHttpClient = () {
+      final client = HttpClient();
+      client.findProxy = (uri) {
+        return "DIRECT";
       };
-    }
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) {
+        return true;
+      };
+      return client;
+    };
+
     // 添加日志拦截器
     /*  _dio.interceptors.add(
       LogInterceptor(
