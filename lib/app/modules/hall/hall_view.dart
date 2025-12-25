@@ -23,7 +23,10 @@ class HallView extends GetView<HallController> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: false,
-      onPopInvokedWithResult: (_, _) async {
+      onPopInvokedWithResult: (bool didPop, Object? result) async {
+        if (didPop) {
+          return;
+        }
         final box = controller.box;
         final cartList = await box.get(Config.shoppingCart) as List?;
         if (cartList?.isNotEmpty ?? false) {
