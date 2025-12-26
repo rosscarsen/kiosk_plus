@@ -10,6 +10,10 @@ import '../modules/home/home_binding.dart';
 import '../modules/home/home_view.dart';
 import '../modules/login/login_binding.dart';
 import '../modules/login/login_view.dart';
+import '../modules/payment/payment_binding.dart';
+import '../modules/payment/payment_view.dart';
+import '../modules/payment_type/payment_type_binding.dart';
+import '../modules/payment_type/payment_type_view.dart';
 import '../modules/privacy/privacy_binding.dart';
 import '../modules/privacy/privacy_view.dart';
 import '../modules/product_detail/product_detail_binding.dart';
@@ -55,6 +59,16 @@ class AppPages {
       name: _Paths.PRIVACY,
       page: () => const PrivacyView(),
       binding: PrivacyBinding(),
+    ),
+    GetPage(
+      name: _Paths.PAYMENT,
+      page: () => const PaymentView(),
+      binding: PaymentBinding(),
+    ),
+    GetPage(
+      name: _Paths.PAYMENT_TYPE,
+      page: () => const PaymentTypeView(),
+      binding: PaymentTypeBinding(),
     ),
   ];
 }
