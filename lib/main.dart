@@ -18,7 +18,6 @@ import 'hive_registrar.g.dart';
 void main() async {
   /// 设置UI
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   /// 初始hive
   await IsolatedHive.initFlutter();
@@ -73,6 +72,7 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
       defaultTransition: Transition.noTransition,
       builder: (context, child) {
+        SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
         final session = SessionService.to;
 
         final app = child!;
