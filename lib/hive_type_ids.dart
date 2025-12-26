@@ -11,4 +11,5 @@ class HiveTypeIds {
   static const int company = 7;
   static const int cartModel = 8;
   static const int setMealList = 9;
+  static const int innerPrinterInfo = 10;
 }

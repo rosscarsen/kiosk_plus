@@ -3,13 +3,14 @@
 // Check in to version control
 
 import 'package:hive_ce/hive.dart';
-
 import 'app/model/api_data_model/data_result_model.dart';
+import 'app/model/bluetooth_printer.dart';
 import 'app/model/cart/cart_model.dart';
 import 'app/model/login/login_data_model.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
+    registerAdapter(BluetoothPrinterAdapter());
     registerAdapter(CartModelAdapter());
     registerAdapter(CategoryTreeProductAdapter());
     registerAdapter(CompanyInfoAdapter());
@@ -24,6 +25,7 @@ extension HiveRegistrar on HiveInterface {
 
 extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
+    registerAdapter(BluetoothPrinterAdapter());
     registerAdapter(CartModelAdapter());
     registerAdapter(CategoryTreeProductAdapter());
     registerAdapter(CompanyInfoAdapter());
