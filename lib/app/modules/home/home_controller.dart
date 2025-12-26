@@ -2,6 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_ce/hive.dart';
+
+import '../../config.dart';
 
 class HomeController extends GetxController with GetSingleTickerProviderStateMixin {
   late AnimationController animCtrl;
@@ -9,6 +12,9 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
   int _secretTapCount = 0;
   Timer? _secretTapTimer;
   final Duration _tapWindow = const Duration(milliseconds: 500);
+  final box = IsolatedHive.box(Config.kioskHiveBox);
+  RxBool isDataReady = false.obs;
+  String imageUrl = "";
 
   @override
   void onInit() {
@@ -21,6 +27,16 @@ class HomeController extends GetxController with GetSingleTickerProviderStateMix
     )..repeat();
 
     scaleAnimation = CurvedAnimation(parent: animCtrl, curve: Curves.elasticInOut);
+    checkDataReady();
+  }
+
+  /// 检查数据是否准备就绪
+  Future<void> checkDataReady() async {
+    final backgroundImage = await box.get(Config.backgroundImage);
+    if (backgroundImage != null) {
+      imageUrl = backgroundImage;
+    }
+    isDataReady.value = true;
   }
 
   @override

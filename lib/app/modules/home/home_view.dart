@@ -1,9 +1,11 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hive_ce/hive.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../config.dart';
 import '../../model/login/login_data_model.dart';
@@ -17,8 +19,6 @@ class HomeView extends GetView<HomeController> {
 
   @override
   Widget build(BuildContext context) {
-    double height = context.height;
-    double width = context.width;
     return PopScope(
       canPop: false,
       child: Scaffold(
@@ -26,45 +26,77 @@ class HomeView extends GetView<HomeController> {
         extendBodyBehindAppBar: true,
         resizeToAvoidBottomInset: false,
         extendBody: true,
-        body: Container(
-          width: width,
-          height: height,
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage('assets/kiosk_bg.jpg'),
-              fit: BoxFit.cover,
-              colorFilter: ColorFilter.mode(Colors.black45, BlendMode.multiply),
-            ),
-          ),
-          child: SafeArea(
-            bottom: false,
-            child: Stack(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: height * 0.1, horizontal: width * 0.08),
-                  child: Align(alignment: Alignment.topCenter, child: _buildMainView(context)),
-                ),
-                Positioned(
-                  right: 0,
-                  top: 0,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () async {
-                      final triggered = controller.handleSecretTap();
-                      if (triggered && !(Get.isDialogOpen ?? false)) {
-                        await openAppSet();
-                      }
-                    },
-                    child: SizedBox(
-                      width: width * 0.3,
-                      height: height * 0.3,
-                      // child: Container(color: Colors.red),
-                    ),
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            double height = constraints.maxHeight;
+            double width = constraints.maxWidth;
+
+            return Obx(() {
+              if (!controller.isDataReady.value) {
+                return Skeletonizer(
+                  enabled: true,
+                  effect: const ShimmerEffect(
+                    baseColor: Color(0xFFE0E0E0),
+                    highlightColor: Color(0xFFF5F5F5),
+                    duration: Duration(milliseconds: 1200),
                   ),
+                  child: Card(
+                    child: Container(color: const Color(0xFFF0F0F0), width: width, height: height),
+                  ),
+                );
+              }
+
+              return SafeArea(
+                bottom: false,
+                child: Stack(
+                  children: [
+                    Positioned.fill(
+                      child: CachedNetworkImage(
+                        imageUrl: controller.imageUrl,
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                        height: double.infinity,
+                        placeholder: (_, _) => Image.asset(
+                          "assets/kiosk_bg.jpg",
+                          fit: BoxFit.cover,
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
+                        errorWidget: (_, _, _) => Container(
+                          color: const Color(0xFFF5F7FA),
+                          alignment: Alignment.center,
+                          child: Image.asset(
+                            "assets/kiosk_bg.jpg",
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(vertical: height * 0.1, horizontal: width * 0.08),
+                      child: Align(alignment: Alignment.topCenter, child: _buildMainView(context)),
+                    ),
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () async {
+                          final triggered = controller.handleSecretTap();
+                          if (triggered && !(Get.isDialogOpen ?? false)) {
+                            await openAppSet();
+                          }
+                        },
+                        child: SizedBox(width: width * 0.3, height: height * 0.3),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ),
+              );
+            });
+          },
         ),
       ),
     );
