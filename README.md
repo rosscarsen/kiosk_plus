@@ -1,4 +1,6 @@
-# kiosk Plus(<https://github.com/rosscarsen/kiosk_plus>)
+# kiosk Plus  
+
+  [源碼地址](https://github.com/rosscarsen/kiosk_plus)
 
 ## 使用前注意事項
 
