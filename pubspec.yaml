@@ -43,7 +43,6 @@ dependencies:
   decimal: ^3.2.4
   flutter_multi_select_items: ^0.4.3
   expansion_tile_group: ^2.3.0
-  flutter_inappwebview: ^6.1.5
   flutter_markdown_plus: ^1.0.5
 dev_dependencies:
   flutter_test:
@@ -58,4 +57,23 @@ flutter:
     - assets/
     - assets/carouselImages/
 get_cli:
-  sub_folder: false  
+  sub_folder: false 
+#启动图配置
+flutter_native_splash:
+  android: true
+  ios: true
+  web: true
+  image: assets/launch.png
+  color: "#fcf9ea"
+  color_dark: "#fcf9ea"
+  fullscreen: true
+  android_gravity: fill
+  ios_content_mode: scaleToFill
+  android_12:
+    image: assets/launch.png
+    color: "#fcf9ea"
+    color_dark: "#fcf9ea"
+    fullscreen: true
+    android_gravity: fill   
+    
+
