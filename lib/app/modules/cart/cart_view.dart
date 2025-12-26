@@ -416,9 +416,11 @@ class CartView extends GetView<CartController> {
                   ),
                 ),
                 trailing: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.kCheckOut, foregroundColor: Colors.white),
-                  child: Text(LocaleKeys.checkout.tr, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  onPressed: () {},
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColors.kPrimary, foregroundColor: Colors.white),
+                  child: Text(LocaleKeys.sendOrder.tr, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  onPressed: () {
+                    Get.toNamed(Routes.PAYMENT_TYPE);
+                  },
                 ),
               ),
             ],
