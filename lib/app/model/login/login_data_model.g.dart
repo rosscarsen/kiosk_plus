@@ -21,13 +21,14 @@ class LoginDataModelAdapter extends TypeAdapter<LoginDataModel> {
       pwd: fields[2] as String?,
       user: fields[3] as String?,
       dsn: fields[4] as Dsn?,
+      backgroundImage: fields[5] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, LoginDataModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(1)
       ..write(obj.company)
       ..writeByte(2)
@@ -35,7 +36,9 @@ class LoginDataModelAdapter extends TypeAdapter<LoginDataModel> {
       ..writeByte(3)
       ..write(obj.user)
       ..writeByte(4)
-      ..write(obj.dsn);
+      ..write(obj.dsn)
+      ..writeByte(5)
+      ..write(obj.backgroundImage);
   }
 
   @override

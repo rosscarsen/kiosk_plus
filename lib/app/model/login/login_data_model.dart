@@ -24,17 +24,26 @@ class LoginDataModel {
   String? user;
   @HiveField(4)
   Dsn? dsn;
+  @HiveField(5)
+  String? backgroundImage;
 
-  LoginDataModel({this.company, this.pwd, this.user, this.dsn});
+  LoginDataModel({this.company, this.pwd, this.user, this.dsn, this.backgroundImage});
 
   factory LoginDataModel.fromJson(Map<String, dynamic> json) => LoginDataModel(
     company: json["company"],
     pwd: json["pwd"],
     user: json["user"],
     dsn: json["dsn"] == null ? null : Dsn.fromJson(json["dsn"]),
+    backgroundImage: json["backgroundImage"],
   );
 
-  Map<String, dynamic> toJson() => {"company": company, "pwd": pwd, "user": user, "dsn": dsn?.toJson()};
+  Map<String, dynamic> toJson() => {
+    "company": company,
+    "pwd": pwd,
+    "user": user,
+    "dsn": dsn?.toJson(),
+    "backgroundImage": backgroundImage,
+  };
 }
 
 @HiveType(typeId: HiveTypeIds.dsn)
