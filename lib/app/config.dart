@@ -15,6 +15,7 @@ class Config {
   static String companyInfo = 'companyInfo'; //公司信息
   static String shoppingCart = 'shoppingCart'; //购物车
   static String carouselImages = 'carouselImages'; //轮播图
+  static String backgroundImage = 'backgroundImage'; //背景图
 
   /// API基础地址
   static String baseurl = "https://api.friendsclub.com/kioskPlus";
@@ -25,4 +26,8 @@ class Config {
   static String getDataList = "/Home/getDataList";
   // 获取单个单品额外信息
   static String getSingleProductExtraInfo = "/Home/productExtraInfo";
+  // 获取用户积分
+  static String getUserPoints = "/Home/getUserPoints";
+  // 提交订单
+  static String checkout = "/Home/checkout";
 }
