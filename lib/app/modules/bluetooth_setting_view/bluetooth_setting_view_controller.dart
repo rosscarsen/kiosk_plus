@@ -27,14 +27,14 @@ class BluetoothSettingViewController extends GetxController {
     _subscriptionBtStatus = PrinterManager.instance.stateBluetooth.listen((status) async {
       currentStatus = status;
       if (status == BTStatus.connected && pendingTask != null) {
-        await box.put(Config.innerPrinterInfo, selectedPrinter?.toJson());
+        await box.put(Config.innerPrinterInfo, selectedPrinter);
         if (Platform.isAndroid) {
           Future.delayed(const Duration(milliseconds: 1000), () {
-            PrinterManager.instance.send(type: PrinterType.bluetooth, bytes: pendingTask!);
+            printerManager.send(type: PrinterType.bluetooth, bytes: pendingTask!);
             pendingTask = null;
           });
         } else if (Platform.isIOS) {
-          PrinterManager.instance.send(type: PrinterType.bluetooth, bytes: pendingTask!);
+          printerManager.send(type: PrinterType.bluetooth, bytes: pendingTask!);
           pendingTask = null;
         }
       }
@@ -50,23 +50,29 @@ class BluetoothSettingViewController extends GetxController {
   void scanDevices() {
     devices.clear();
     printerManager.discovery(type: defaultPrinterType, isBle: false).listen((device) {
-      if (device.address != null && device.address!.isNotEmpty) {
-        devices.add(BluetoothPrinter(deviceName: device.name, address: device.address));
-        update(['searchDevices']);
+      if (device.address?.isEmpty ?? true) {
+        return;
       }
+      devices.add(
+        BluetoothPrinter(
+          deviceName: device.name,
+          address: device.address,
+          vendorId: device.vendorId,
+          productId: device.productId,
+        ),
+      );
+      update(['searchDevices']);
     });
   }
 
   Future<void> innerPrinter(BluetoothPrinter device) async {
     box.delete(Config.innerPrinterInfo);
-    if (currentStatus == BTStatus.connected) {
-      await printerManager.disconnect(type: PrinterType.bluetooth);
+    if (selectedPrinter != null) {
+      if ((device.address != selectedPrinter!.address)) {
+        await printerManager.disconnect(type: PrinterType.bluetooth);
+      }
     }
     selectedPrinter = device;
-    if (device.address == null || device.address!.isEmpty) {
-      return;
-    }
-
     await printerManager.connect(
       type: PrinterType.bluetooth,
       model: BluetoothPrinterInput(
@@ -76,7 +82,6 @@ class BluetoothSettingViewController extends GetxController {
         autoConnect: false,
       ),
     );
-    pendingTask = null;
     final profile = await CapabilityProfile.load(name: 'XP-N160I');
     final generator = Generator(PaperSize.mm58, profile);
     List<int> bytes = innerPrinterData(generator);
@@ -90,7 +95,7 @@ class BluetoothSettingViewController extends GetxController {
         } else {
           printerManager.send(type: PrinterType.bluetooth, bytes: bytes);
         }
-        await box.put(Config.innerPrinterInfo, selectedPrinter?.toJson());
+        await box.put(Config.innerPrinterInfo, selectedPrinter);
       } catch (e, st) {
         debugPrint('Failed to send print data: $e\n$st');
       }
