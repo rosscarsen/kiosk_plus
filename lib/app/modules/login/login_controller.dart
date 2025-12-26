@@ -78,7 +78,7 @@ class LoginController extends GetxController with GetSingleTickerProviderStateMi
             }
             final box = IsolatedHive.box(Config.kioskHiveBox);
             await box.put(Config.loginData, loginResult);
-
+            await box.put(Config.backgroundImage, loginResult.backgroundImage);
             if (loginFormData['remember'] == true) {
               await box.put(Config.remember, true);
             } else {
