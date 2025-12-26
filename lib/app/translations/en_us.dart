@@ -97,4 +97,12 @@ Map<String, String> get enUS => {
   LocaleKeys.pointsConsumption: "Points Consumption",
   LocaleKeys.payReadCard: "Pay Read Card",
   LocaleKeys.sendOrder: "Send Order",
+  LocaleKeys.paymentType: "Payment Type",
+  LocaleKeys.pleaseSelectPaymentType: "Please select payment type",
+  LocaleKeys.insufficientPoints: "Insufficient points, please select other payment methods",
+  LocaleKeys.networkError: "Network error, please try again later",
+  LocaleKeys.cardNumberDoesNotExits: "Card number does not exist",
+  LocaleKeys.pleaseWaiting: "Please wait...",
+  LocaleKeys.finalOperationInProgress: "Final operation is in progress, please wait...",
+  LocaleKeys.contactCounter: "An exception occurred, please contact the counter person",
 };

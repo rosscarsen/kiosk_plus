@@ -95,4 +95,12 @@ abstract class LocaleKeys {
   static const String pointsConsumption = "pointsConsumption";
   static const String payReadCard = "payReadCard";
   static const String sendOrder = "sendOrder";
+  static const String paymentType = "paymentType";
+  static const String pleaseSelectPaymentType = "pleaseSelectPaymentType";
+  static const String insufficientPoints = "insufficientPoints";
+  static const String networkError = "networkError";
+  static const String cardNumberDoesNotExits = "cardNumberDoesNotExits";
+  static const String pleaseWaiting = "pleaseWaiting";
+  static const String finalOperationInProgress = "finalOperationInProgress";
+  static const String contactCounter = "contactCounter";
 }
