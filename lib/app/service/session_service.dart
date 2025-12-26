@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:local_session_timeout/local_session_timeout.dart';
 
@@ -24,6 +25,7 @@ class SessionService extends GetxService {
     _sessionConfig.stream.listen((SessionTimeoutState timeoutEvent) {
       if (timeoutEvent == SessionTimeoutState.userInactivityTimeout ||
           timeoutEvent == SessionTimeoutState.appFocusTimeout) {
+        FocusManager.instance.primaryFocus?.unfocus();
         isIdle.value = true;
       }
     });
